@@ -128,11 +128,36 @@ def rank_group_fifa(
 @njit
 def simulate_knockout_match(
     strength_a: float, strength_b: float
-) -> tuple[int, int]:
-    """Simulate a single knockout match, return (goals_a, goals_b)."""
+) -> tuple[int, int, int]:
+    """
+    Simulate a knockout match with extra time and penalties.
+    Returns (goals_a, goals_b, penalty_winner):
+      penalty_winner = -1 if decided in regulation/extra time
+      penalty_winner =  0 if team A won on penalties
+      penalty_winner =  1 if team B won on penalties
+    """
     lambda_a = max(0.1, np.exp(strength_a - strength_b))
     lambda_b = max(0.1, np.exp(strength_b - strength_a))
-    return np.random.poisson(lambda_a), np.random.poisson(lambda_b)
+
+    ga = np.random.poisson(lambda_a)
+    gb = np.random.poisson(lambda_b)
+
+    if ga != gb:
+        return ga, gb, -1
+
+    # Extra time: 30 min -> ~1/3 intensity
+    eta_a = max(0.05, np.exp(strength_a - strength_b) * 0.33)
+    eta_b = max(0.05, np.exp(strength_b - strength_a) * 0.33)
+
+    ga += np.random.poisson(eta_a)
+    gb += np.random.poisson(eta_b)
+
+    if ga != gb:
+        return ga, gb, -1
+
+    # Penalties: 50/50
+    pen_winner = 0 if np.random.random() < 0.5 else 1
+    return ga, gb, pen_winner
 
 
 @njit
@@ -188,8 +213,8 @@ def run_knockout_round(
             winners[i // 2] = -1
             continue
 
-        ga, gb = simulate_knockout_match(strengths[ti], strengths[tj])
-        if ga >= gb:
+        ga, gb, pen = simulate_knockout_match(strengths[ti], strengths[tj])
+        if ga > gb or (ga == gb and pen == 0):
             winners[i // 2] = ti
         else:
             winners[i // 2] = tj
@@ -215,7 +240,8 @@ def run_single_tournament_py(
     stages = np.zeros(num_teams, dtype=np.int32)
     group_results = simulate_group_stage_numba(strengths, assignments)
 
-    all_qualified = []
+    all_winners = np.empty(NUM_GROUPS, dtype=np.int64)
+    all_runners_up = np.empty(NUM_GROUPS, dtype=np.int64)
     third_placed_teams = np.empty(NUM_GROUPS, dtype=np.int64)
     third_placed_stats = np.zeros((NUM_GROUPS, 3), dtype=np.float64)
 
@@ -223,6 +249,8 @@ def run_single_tournament_py(
         mask = assignments == g
         indices = np.where(mask)[0]
         if len(indices) == 0:
+            all_winners[g] = -1
+            all_runners_up[g] = -1
             third_placed_teams[g] = -1
             continue
 
@@ -241,8 +269,8 @@ def run_single_tournament_py(
         stages[runner_up] = 1
         stages[third_pl] = 1
 
-        all_qualified.append(winner)
-        all_qualified.append(runner_up)
+        all_winners[g] = winner
+        all_runners_up[g] = runner_up
 
         third_placed_teams[g] = third_pl
         third_placed_stats[g, 0] = group_results[third_pl, 0]
@@ -251,50 +279,45 @@ def run_single_tournament_py(
 
     # Select best 8 third-placed
     best_third = select_best_third_numba(third_placed_stats, third_placed_teams)
+
+    # Reset non-qualifying third-placed to group stage elimination
+    all_third_placed = third_placed_teams.copy()
+    for g in range(NUM_GROUPS):
+        t = third_placed_teams[g]
+        if t >= 0:
+            stages[t] = 0  # default: group elimination
     for t in best_third:
         if t >= 0:
-            all_qualified.append(t)
+            stages[t] = 1  # qualified for R32
 
-    if len(all_qualified) < 2:
+    if NUM_GROUPS < 1:
         return stages
 
-    qualified = np.array(all_qualified, dtype=np.int64)
-
     # Build Round of 32 bracket
-    # FIFA 2026: 12 group winners + 12 runners-up + 8 best third
-    # Winners vs runners-up/third in predetermined pattern
-    winners = qualified[0::2]
-    runners_up = []
-    third_teams = []
+    # FIFA 2026: 12 group winners + 12 runners-up + 8 best third = 32 teams
+    valid_winners = all_winners[all_winners >= 0]
+    valid_runners = all_runners_up[all_runners_up >= 0]
+    valid_third = best_third[best_third >= 0]
 
-    for g in range(NUM_GROUPS):
-        mask = assignments == g
-        indices = np.where(mask)[0]
-        if len(indices) < 2:
-            continue
-        pts = group_results[indices, 0]
-        gd = group_results[indices, 1]
-        gf = group_results[indices, 2]
-        ga = group_results[indices, 3]
-        ranking = rank_group_fifa(pts, gd, gf, ga, indices)
-        if len(ranking) >= 2:
-            runners_up.append(ranking[1])
-        already_qualified = {ranking[0], ranking[1]}
-        for t in best_third:
-            if t in indices and t not in already_qualified:
-                third_teams.append(t)
-                break
-
-    # Simple bracket: interleave winners vs runners-up/third
     bracket_r32 = np.empty(ROUND_OF_32_SIZE, dtype=np.int64)
-    all_runners = np.array(runners_up + third_teams, dtype=np.int64)
 
-    for i in range(min(len(winners), len(all_runners))):
-        bracket_r32[2 * i] = winners[i]
-        bracket_r32[2 * i + 1] = all_runners[i]
+    # Pair 1-12: winners vs runners-up
+    n_wr_pairs = min(len(valid_winners), len(valid_runners))
+    for i in range(n_wr_pairs):
+        bracket_r32[2 * i] = valid_winners[i]
+        bracket_r32[2 * i + 1] = valid_runners[i]
 
-    # Fill remaining
-    for i in range(len(winners) + len(all_runners), ROUND_OF_32_SIZE):
+    # Pair 13-16: best third-placed vs best third-placed
+    offset = 2 * n_wr_pairs
+    n_third = len(valid_third)
+    for i in range(0, n_third, 2):
+        pos = offset + i
+        if pos + 1 < ROUND_OF_32_SIZE:
+            bracket_r32[pos] = valid_third[i]
+            bracket_r32[pos + 1] = valid_third[i + 1] if i + 1 < n_third else -1
+
+    n_filled = offset + n_third - (n_third % 2)
+    for i in range(n_filled, ROUND_OF_32_SIZE):
         bracket_r32[i] = -1
 
     # R32

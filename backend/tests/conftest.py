@@ -1,12 +1,16 @@
+import os
 import uuid
 from typing import Generator
+
+os.environ["DATABASE_URL"] = "sqlite:///./test.db"
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from app.db.session import Base, get_db
+from app.core.dependencies import get_db
+from app.db.session import Base
 from app.main import app
 
 TEST_DATABASE_URL = "sqlite:///./test.db"

@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-from app.api import analysis, calibration, groups, matches, predictions, rankings, simulations, teams
+from app.api import analysis, calibration, calibration_refinement, dashboard, groups, matches, predictions, rankings, simulations, teams
 from app.core.config import get_settings
 from app.db.session import engine, Base
 
@@ -37,10 +37,17 @@ app.include_router(rankings.router, prefix=settings.api_prefix)
 app.include_router(simulations.router, prefix=settings.api_prefix)
 app.include_router(calibration.router, prefix=settings.api_prefix)
 app.include_router(analysis.router, prefix=settings.api_prefix)
+app.include_router(calibration_refinement.router, prefix=settings.api_prefix)
+app.include_router(dashboard.router, prefix=settings.api_prefix)
 
 
 @app.on_event("startup")
 async def startup():
+    # Import all models to ensure correct table creation order for SQLite compat
+    from app.models import (  # noqa: F401
+        competition, elo_rating, fifa_ranking, group, group_standing,
+        match, player, simulation, team, xg_metrics,
+    )
     Base.metadata.create_all(bind=engine)
 
 

@@ -1,113 +1,168 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api, SimulationDetail, SimulationResult } from "@/lib/api";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatProbability } from "@/lib/utils";
+import { api, type Simulation, type SimulationDetail } from "@/lib/api";
+import { formatDateTime } from "@/lib/utils";
+import { Play, Loader2, Trophy, BarChart4 } from "lucide-react";
 
 export default function SimulationsPage() {
-  const [sims, setSims] = useState<SimulationDetail[]>([]);
+  const [sims, setSims] = useState<Simulation[]>([]);
+  const [details, setDetails] = useState<Record<string, SimulationDetail>>({});
   const [loading, setLoading] = useState(true);
+  const [running, setRunning] = useState(false);
 
   const loadSims = () => {
     setLoading(true);
-    api.simulations.list().then(async (list) => {
-      const details = await Promise.all(
-        list.map((s) => api.simulations.get(s.id).catch(() => null))
-      );
-      setSims(details.filter(Boolean) as SimulationDetail[]);
-    }).catch(() => {}).finally(() => setLoading(false));
+    api.simulations
+      .list()
+      .then(async (list) => {
+        setSims(list);
+        const d: Record<string, SimulationDetail> = {};
+        await Promise.all(
+          list.map(async (s) => {
+            try {
+              const sd = await api.simulations.get(s.id);
+              d[s.id] = sd;
+            } catch {
+              // ignore
+            }
+          })
+        );
+        setDetails(d);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   };
 
-  useEffect(() => { loadSims(); }, []);
+  useEffect(() => {
+    loadSims();
+  }, []);
 
   const runNew = async () => {
+    setRunning(true);
     try {
-      const sim = await api.simulations.create({
-        competition_id: "00000000-0000-0000-0000-000000000000",
+      const created = await api.simulations.create({
+        competition_id: "00000000-0000-0000-0000-000000000001",
         num_simulations: 10000,
       });
-      await api.simulations.run(sim.id);
+      await api.simulations.run(created.id);
       loadSims();
     } catch (e) {
-      console.error(e);
+      console.error("Simulation failed:", e);
     }
+    setRunning(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="container-page">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
+        </div>
+      </div>
+    );
+  }
+
+  // For each completed sim, compute top champion
+  const getTopChampion = (simId: string): { name: string; prob: number } | null => {
+    const d = details[simId];
+    if (!d?.results?.length) return null;
+    const top = [...d.results].sort((a, b) => b.won_tournament - a.won_tournament)[0];
+    const n = Math.max(d.num_simulations, 1);
+    return { name: top.team_name, prob: (top.won_tournament / n) * 100 };
   };
 
   return (
-    <div className="container-page">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="container-page space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="page-title">Simulations</h1>
+          <h1 className="page-title">Monte Carlo Simulations</h1>
           <p className="page-subtitle">
-            Monte Carlo tournament results. Run 100k+ simulations to estimate probabilities.
+            Run 10,000+ tournament simulations to compute knockout probabilities
           </p>
         </div>
-        <Button onClick={runNew}>New Simulation</Button>
+        <button
+          onClick={runNew}
+          disabled={running}
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 transition-colors"
+        >
+          {running ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Play className="w-4 h-4" />
+          )}
+          {running ? "Running..." : "New Simulation"}
+        </button>
       </div>
 
-      {loading ? (
-        <p className="text-gray-500">Loading simulations...</p>
-      ) : sims.length === 0 ? (
+      {sims.length === 0 && (
         <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-gray-500">No simulations yet.</p>
-            <Button onClick={runNew} className="mt-4">Run First Simulation</Button>
+          <CardContent className="p-12 text-center">
+            <BarChart4 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 mb-4">
+              No simulations yet. Run your first Monte Carlo simulation to see results.
+            </p>
+            <button
+              onClick={runNew}
+              disabled={running}
+              className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50"
+            >
+              {running ? "Running..." : "Run First Simulation"}
+            </button>
           </CardContent>
         </Card>
-      ) : (
-        sims.map((sim) => (
-          <Card key={sim.id} className="mb-6">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>{sim.name || "Simulation"}</CardTitle>
-                <Badge variant={sim.status === "completed" ? "success" : "default"}>
-                  {sim.status}
-                </Badge>
-              </div>
-              <p className="text-sm text-gray-500">
-                {sim.num_simulations.toLocaleString()} runs
-                {sim.completed_at && <> &middot; Completed {new Date(sim.completed_at).toLocaleDateString()}</>}
-              </p>
-            </CardHeader>
-            <CardContent className="p-0">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b bg-gray-50 text-left">
-                    <th className="px-4 py-2 font-medium text-gray-500">Team</th>
-                    <th className="px-4 py-2 font-medium text-gray-500">R16</th>
-                    <th className="px-4 py-2 font-medium text-gray-500">QF</th>
-                    <th className="px-4 py-2 font-medium text-gray-500">SF</th>
-                    <th className="px-4 py-2 font-medium text-gray-500">Final</th>
-                    <th className="px-4 py-2 font-medium text-gray-500">Winner</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sim.results
-                    .sort((a, b) => b.won_tournament - a.won_tournament)
-                    .slice(0, 20)
-                    .map((r) => (
-                      <tr key={r.id} className="border-b last:border-0 hover:bg-gray-50">
-                        <td className="px-4 py-2 font-medium">{r.team_name}</td>
-                        <td className="px-4 py-2 font-mono">{r.reached_round_of_16}</td>
-                        <td className="px-4 py-2 font-mono">{r.reached_quarter_final}</td>
-                        <td className="px-4 py-2 font-mono">{r.reached_semi_final}</td>
-                        <td className="px-4 py-2 font-mono">{r.reached_final}</td>
-                        <td className="px-4 py-2">
-                          <span className="font-bold text-primary-600">
-                            {formatProbability(r.won_tournament / sim.num_simulations)}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        ))
       )}
+
+      <div className="space-y-4">
+        {sims.map((sim) => {
+          const top = getTopChampion(sim.id);
+          return (
+            <Link key={sim.id} href={`/simulations/${sim.id}`}>
+              <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                <CardContent className="p-5 flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold">
+                        {sim.name || "Unnamed Simulation"}
+                      </h3>
+                      <Badge
+                        variant={
+                          sim.status === "completed"
+                            ? "success"
+                            : sim.status === "running"
+                              ? "warning"
+                              : "default"
+                        }
+                      >
+                        {sim.status}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {sim.num_simulations.toLocaleString()} runs
+                      {sim.completed_at &&
+                        ` | Completed: ${formatDateTime(sim.completed_at)}`}
+                    </p>
+                  </div>
+                  {top && sim.status === "completed" && (
+                    <div className="text-right">
+                      <div className="flex items-center gap-2">
+                        <Trophy className="w-4 h-4 text-yellow-500" />
+                        <span className="font-semibold">{top.name}</span>
+                      </div>
+                      <span className="text-sm text-yellow-600 font-bold">
+                        {top.prob.toFixed(1)}% champion
+                      </span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }

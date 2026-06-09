@@ -59,7 +59,7 @@ class MatchService:
         elo_score = latest_elo.elo_score if latest_elo else 1500
         xg_for = latest_xg.xg_for if latest_xg else 1.0
         xg_against = latest_xg.xg_against if latest_xg else 1.0
-        igf_strength = min(1.0, max(0.0, (elo_score - 1300) / 800))
+        igf_strength = min(100.0, max(0.0, (elo_score - 1300) / 8))
 
         return TeamEntity(
             id=team.id,

@@ -141,8 +141,8 @@ class MatchPredictionEngine:
         away_team: TeamEntity,
         home_advantage: bool = True,
     ) -> MatchPredictionResult:
-        home_strength = home_team.igf_score
-        away_strength = away_team.igf_score
+        home_strength = home_team.igf_score / 50.0
+        away_strength = away_team.igf_score / 50.0
         ha = self.config.home_advantage if home_advantage else 0.0
 
         lambda_home = max(0.1, exp(home_strength - away_strength + ha))
@@ -328,6 +328,11 @@ class MatchPredictionEngine:
         prior_home = elo_expected_home
         prior_draw = 0.25
         prior_away = 1.0 - prior_home - prior_draw
+        if prior_away < 0.0:
+            prior_away = 0.0
+            total_prior = prior_home + prior_draw + prior_away
+            prior_home /= total_prior
+            prior_draw /= total_prior
 
         total = prior_strength + 1.0
         updated_home = (prior_strength * prior_home + home_win) / total
@@ -347,8 +352,8 @@ class MatchPredictionEngine:
         elo_diff = abs(elo_home - elo_away)
         igf_diff = abs(igf_home - igf_away)
 
-        elo_confidence = min(100, elo_diff / 20)
-        igf_confidence = min(100, igf_diff * 100)
+        elo_confidence = min(100, elo_diff / 8)
+        igf_confidence = min(100, igf_diff * 1.0)
 
         return 0.5 * elo_confidence + 0.5 * igf_confidence
 
