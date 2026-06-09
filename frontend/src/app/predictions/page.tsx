@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonPage } from "@/components/ui/skeleton";
 import { api, type MatchPrediction, type FullMatchPrediction } from "@/lib/api";
 import { formatProbability, getStageLabel, getConfidenceColor, formatDate } from "@/lib/utils";
 import ProbabilityBar from "@/components/ProbabilityBar";
@@ -27,7 +28,6 @@ export default function PredictionsPage() {
           stages[m.id] = m.stage;
         }
         setMatchStages(stages);
-        // Fetch full predictions for each match (top 20)
         const fulls: Record<string, FullMatchPrediction> = {};
         await Promise.all(
           list.slice(0, 20).map(async (p) => {
@@ -45,15 +45,7 @@ export default function PredictionsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="container-page">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <SkeletonPage />;
 
   if (predictions.length === 0) {
     return (

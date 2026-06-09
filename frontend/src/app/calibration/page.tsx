@@ -3,39 +3,40 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonPage } from "@/components/ui/skeleton";
 import {
   api,
   type RefinementReport,
   type ReliabilityCurve,
   type CalibrationMethod,
   type BenchmarkEntry,
+  type CalibrationReport,
 } from "@/lib/api";
 import ReliabilityDiagram from "@/components/ReliabilityDiagram";
 import BenchmarkChart from "@/components/BenchmarkChart";
+import CalibrationCurveChart from "@/components/CalibrationCurveChart";
 import { BarChart3, CheckCircle2, AlertTriangle } from "lucide-react";
 
 export default function CalibrationPage() {
   const [report, setReport] = useState<RefinementReport | null>(null);
+  const [calibReport, setCalibReport] = useState<CalibrationReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api.refinement
-      .run()
-      .then(setReport)
+    Promise.all([
+      api.refinement.run(),
+      api.calibration.run("full").catch(() => null),
+    ])
+      .then(([ref, cal]) => {
+        setReport(ref);
+        setCalibReport(cal);
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="container-page">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <SkeletonPage />;
 
   if (error || !report) {
     return (
@@ -110,6 +111,18 @@ export default function CalibrationPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Calibration Curve */}
+      {calibReport && calibReport.calibration_curve && calibReport.calibration_curve.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Calibration Curve — Full Model</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CalibrationCurveChart curve={calibReport.calibration_curve} />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Benchmark Before/After */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonPage } from "@/components/ui/skeleton";
 import { api, type SimulationProbabilities } from "@/lib/api";
 import Bracket from "@/components/Bracket";
 import { Trophy, Swords } from "lucide-react";
@@ -33,15 +34,7 @@ export default function BracketPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="container-page">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <SkeletonPage />;
 
   if (error || !data) {
     return (

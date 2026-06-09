@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonPage } from "@/components/ui/skeleton";
 import { api, type FullMatchPrediction } from "@/lib/api";
 import {
   formatPercent,
@@ -39,15 +40,7 @@ export default function MatchPredictionDetailPage() {
       .finally(() => setLoading(false));
   }, [matchId]);
 
-  if (loading) {
-    return (
-      <div className="container-page">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <SkeletonPage />;
 
   if (error || !pred) {
     return (

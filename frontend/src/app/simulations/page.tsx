@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonPage } from "@/components/ui/skeleton";
 import { api, type Simulation, type SimulationDetail } from "@/lib/api";
 import { formatDateTime } from "@/lib/utils";
 import { Play, Loader2, Trophy, BarChart4 } from "lucide-react";
@@ -56,17 +57,8 @@ export default function SimulationsPage() {
     setRunning(false);
   };
 
-  if (loading) {
-    return (
-      <div className="container-page">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <SkeletonPage />;
 
-  // For each completed sim, compute top champion
   const getTopChampion = (simId: string): { name: string; prob: number } | null => {
     const d = details[simId];
     if (!d?.results?.length) return null;

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonPage } from "@/components/ui/skeleton";
 import {
   api,
   type GroupDetail,
@@ -32,7 +33,6 @@ export default function GroupDetailPage() {
       }),
     ])
       .then(([groups, simProbs]) => {
-        // Find the group with matching name
         const match = groups.find(
           (g) => g.name.toUpperCase() === groupName.toUpperCase()
         );
@@ -43,15 +43,7 @@ export default function GroupDetailPage() {
       .finally(() => setLoading(false));
   }, [groupName]);
 
-  if (loading) {
-    return (
-      <div className="container-page">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <SkeletonPage />;
 
   if (!group) {
     return (

@@ -4,30 +4,33 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { api, type GroupDetail } from "@/lib/api";
+import { SkeletonPage } from "@/components/ui/skeleton";
+import GroupHeatmap from "@/components/GroupHeatmap";
+import { api, type GroupDetail, type SimulationProbabilities } from "@/lib/api";
 import { getContinentColor } from "@/lib/utils";
 
 export default function GroupsPage() {
   const [groups, setGroups] = useState<GroupDetail[]>([]);
+  const [probs, setProbs] = useState<SimulationProbabilities | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.groups
-      .list()
-      .then(setGroups)
+    Promise.all([
+      api.groups.list(),
+      api.simulations.list().then((sims) => {
+        const completed = sims.find((s) => s.status === "completed");
+        return completed ? api.simulations.probabilities(completed.id) : null;
+      }),
+    ])
+      .then(([g, p]) => {
+        setGroups(g);
+        setProbs(p);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="container-page">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <SkeletonPage />;
 
   const sorted = [...groups].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -37,6 +40,17 @@ export default function GroupsPage() {
       <p className="page-subtitle">
         12 groups of 4 — click any group for detailed standings and qualification probabilities
       </p>
+
+      {probs && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Qualification Heatmap</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <GroupHeatmap groups={probs.groups} />
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {sorted.map((group) => (

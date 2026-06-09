@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SkeletonPage } from "@/components/ui/skeleton";
 import { api, type SimulationProbabilities, type TeamStageProb } from "@/lib/api";
 import { formatPercent, getWinColor } from "@/lib/utils";
+import SortableTable, { type Column } from "@/components/SortableTable";
 import StageProgressBar from "@/components/StageProgressBar";
 import { Trophy, Medal, TrendingUp } from "lucide-react";
 import Link from "next/link";
@@ -29,15 +31,7 @@ export default function KnockoutPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="container-page">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <SkeletonPage />;
 
   if (!data) {
     return (
@@ -47,12 +41,7 @@ export default function KnockoutPage() {
         <p className="text-gray-500 mb-4">
           Run a Monte Carlo simulation first to see knockout probabilities.
         </p>
-        <Link
-          href="/simulations"
-          className="text-primary-600 hover:underline"
-        >
-          Go to Simulations →
-        </Link>
+        <Link href="/simulations" className="text-primary-600 hover:underline">Go to Simulations →</Link>
       </div>
     );
   }
@@ -69,33 +58,35 @@ export default function KnockoutPage() {
     { key: "sf", label: "Semi-Final" },
   ];
 
+  const columns: Column<TeamStageProb>[] = [
+    { key: "team_name", label: "Team", render: (t) => <span className="font-medium">{t.team_name}</span> },
+    { key: "group_name", label: "Group", align: "center", render: (t) => <span className="text-gray-400">{t.group_name}</span> },
+    { key: "qualify_r32_prob", label: "R32", align: "center", render: (t) => <span className={getWinColor(t.qualify_r32_prob)}>{t.qualify_r32_prob.toFixed(1)}%</span>, sortValue: (t) => t.qualify_r32_prob },
+    { key: "r16_prob", label: "R16", align: "center", render: (t) => <span className={getWinColor(t.r16_prob)}>{t.r16_prob.toFixed(1)}%</span>, sortValue: (t) => t.r16_prob },
+    { key: "qf_prob", label: "QF", align: "center", render: (t) => <span className={getWinColor(t.qf_prob)}>{t.qf_prob.toFixed(1)}%</span>, sortValue: (t) => t.qf_prob },
+    { key: "sf_prob", label: "SF", align: "center", render: (t) => <span className={getWinColor(t.sf_prob)}>{t.sf_prob.toFixed(1)}%</span>, sortValue: (t) => t.sf_prob },
+    { key: "final_prob", label: "Final", align: "center", render: (t) => <span className={getWinColor(t.final_prob)}>{t.final_prob.toFixed(1)}%</span>, sortValue: (t) => t.final_prob },
+    { key: "win_prob", label: "Champion", align: "center", render: (t) => <span className="font-bold text-yellow-600">{t.win_prob.toFixed(1)}%</span>, sortValue: (t) => t.win_prob },
+    { key: "avg_points", label: "Avg Pts", align: "center", render: (t) => <span className="text-gray-400">{t.avg_points.toFixed(1)}</span>, sortValue: (t) => t.avg_points },
+  ];
+
   return (
     <div className="container-page space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
           <h1 className="page-title">Knockout Stage Probabilities</h1>
-          <p className="page-subtitle">
-            Based on {data.num_simulations.toLocaleString()} Monte Carlo simulations
-          </p>
+          <p className="page-subtitle">Based on {data.num_simulations.toLocaleString()} Monte Carlo simulations</p>
         </div>
-        <Link
-          href="/bracket"
-          className="text-sm text-primary-600 hover:underline flex items-center gap-1"
-        >
-          View Bracket <span>→</span>
-        </Link>
+        <Link href="/bracket" className="text-sm text-primary-600 hover:underline flex items-center gap-1">View Bracket <span>→</span></Link>
       </div>
 
-      {/* Sort tabs */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 flex-wrap">
         {tabs.map((t) => (
           <button
             key={t.key}
             onClick={() => setSortBy(t.key)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              sortBy === t.key
-                ? "bg-primary-600 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              sortBy === t.key ? "bg-primary-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             {t.label}
@@ -103,117 +94,38 @@ export default function KnockoutPage() {
         ))}
       </div>
 
-      {/* Top 3 champions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {sorted.slice(0, 3).map((t, i) => (
-          <Card
-            key={t.team_name}
-            className={`border-2 ${
-              i === 0
-                ? "border-yellow-400"
-                : i === 1
-                  ? "border-gray-300"
-                  : "border-orange-300"
-            }`}
-          >
+          <Card key={t.team_name} className={`border-2 ${i === 0 ? "border-yellow-400" : i === 1 ? "border-gray-300" : "border-orange-300"}`}>
             <CardContent className="p-6 text-center">
               {i === 0 && <Trophy className="w-8 h-8 text-yellow-500 mx-auto mb-2" />}
               {i === 1 && <Medal className="w-8 h-8 text-gray-400 mx-auto mb-2" />}
               {i === 2 && <Medal className="w-8 h-8 text-orange-400 mx-auto mb-2" />}
               <h3 className="text-lg font-bold">{t.team_name}</h3>
-              <div className="text-3xl font-bold text-primary-600 mt-2">
-                {t.win_prob.toFixed(1)}%
-              </div>
+              <div className="text-3xl font-bold text-primary-600 mt-2">{t.win_prob.toFixed(1)}%</div>
               <div className="text-sm text-gray-500 mt-1">Win Probability</div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Full table */}
       <Card>
         <CardHeader>
           <CardTitle>All Teams — Stage Probabilities</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b text-gray-500 text-xs uppercase">
-                  <th className="text-left py-2">Team</th>
-                  <th className="text-center py-2">Group</th>
-                  <th className="text-center py-2">R32</th>
-                  <th className="text-center py-2">R16</th>
-                  <th className="text-center py-2">QF</th>
-                  <th className="text-center py-2">SF</th>
-                  <th className="text-center py-2">Final</th>
-                  <th className="text-center py-2 font-bold">Champion</th>
-                  <th className="text-center py-2">Avg Pts</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sorted.map((t) => (
-                  <tr
-                    key={t.team_name}
-                    className="border-b border-gray-50 hover:bg-gray-50"
-                  >
-                    <td className="py-2 font-medium">{t.team_name}</td>
-                    <td className="text-center py-2 text-gray-400">
-                      {t.group_name}
-                    </td>
-                    <td className="text-center py-2">
-                      <span className={getWinColor(t.qualify_r32_prob)}>
-                        {t.qualify_r32_prob.toFixed(1)}%
-                      </span>
-                    </td>
-                    <td className="text-center py-2">
-                      <span className={getWinColor(t.r16_prob)}>
-                        {t.r16_prob.toFixed(1)}%
-                      </span>
-                    </td>
-                    <td className="text-center py-2">
-                      <span className={getWinColor(t.qf_prob)}>
-                        {t.qf_prob.toFixed(1)}%
-                      </span>
-                    </td>
-                    <td className="text-center py-2">
-                      <span className={getWinColor(t.sf_prob)}>
-                        {t.sf_prob.toFixed(1)}%
-                      </span>
-                    </td>
-                    <td className="text-center py-2">
-                      <span className={getWinColor(t.final_prob)}>
-                        {t.final_prob.toFixed(1)}%
-                      </span>
-                    </td>
-                    <td className="text-center py-2 font-bold">
-                      <span className="text-yellow-600">
-                        {t.win_prob.toFixed(1)}%
-                      </span>
-                    </td>
-                    <td className="text-center py-2 text-gray-400">
-                      {t.avg_points.toFixed(1)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SortableTable columns={columns} data={sorted} defaultSort={{ key: "win_prob", dir: "desc" }} />
         </CardContent>
       </Card>
 
-      {/* Per-team stage progress bars */}
       <Card>
         <CardHeader>
           <CardTitle>Stage Advancement Profiles — Top 16</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {sorted.slice(0, 16).map((t) => (
-              <div
-                key={t.team_name}
-                className="border border-gray-100 rounded-lg p-3"
-              >
+              <div key={t.team_name} className="border border-gray-100 rounded-lg p-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium text-sm">{t.team_name}</span>
                   <Badge variant="info">{t.win_prob.toFixed(1)}% Win</Badge>
