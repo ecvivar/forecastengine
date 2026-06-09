@@ -1,0 +1,143 @@
+import json
+import uuid
+from datetime import datetime
+
+from sqlalchemy.orm import Session, joinedload
+
+from app.domain.entities import SimulationConfig, TeamEntity
+from app.engine.igf import IGFEngine
+from app.engine.monte_carlo import MonteCarloEngine
+from app.models.elo_rating import EloRating
+from app.models.fifa_ranking import FifaRanking
+from app.models.group import Group
+from app.models.group_standing import GroupStanding
+from app.models.simulation import Simulation, SimulationResult
+from app.models.team import Team
+from app.models.xg_metrics import XGMetrics
+from app.schemas.simulation import SimulationCreate
+
+
+class SimulationService:
+    def __init__(self, db: Session):
+        self.db = db
+        self.engine = MonteCarloEngine()
+        self.igf_engine = IGFEngine()
+
+    def get_all(self, skip: int = 0, limit: int = 20) -> list[Simulation]:
+        return (
+            self.db.query(Simulation)
+            .order_by(Simulation.created_at.desc())
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+
+    def get_by_id(self, sim_id: uuid.UUID) -> Simulation | None:
+        return (
+            self.db.query(Simulation)
+            .options(joinedload(Simulation.results).joinedload(SimulationResult.team))
+            .filter(Simulation.id == sim_id)
+            .first()
+        )
+
+    def create(self, data: SimulationCreate) -> Simulation:
+        sim = Simulation(
+            competition_id=data.competition_id,
+            name=data.name or f"Simulation_{datetime.utcnow().isoformat()}",
+            num_simulations=data.num_simulations,
+            config=json.dumps(data.config) if data.config else None,
+        )
+        self.db.add(sim)
+        self.db.commit()
+        self.db.refresh(sim)
+        return sim
+
+    def _load_team_entities(self) -> tuple[list[TeamEntity], dict[uuid.UUID, str]]:
+        """Load all teams with actual Elo, FIFA, xG data and real group mappings."""
+        teams = self.db.query(Team).all()
+        group_standings = self.db.query(GroupStanding).options(
+            joinedload(GroupStanding.group), joinedload(GroupStanding.team)
+        ).all()
+
+        team_to_group = {}
+        for gs in group_standings:
+            if gs.team_id not in team_to_group:
+                team_to_group[gs.team_id] = gs.group.name
+
+        team_entities = []
+        group_mapping = {}
+
+        for team in teams:
+            latest_elo = (
+                self.db.query(EloRating)
+                .filter(EloRating.team_id == team.id)
+                .order_by(EloRating.rating_date.desc())
+                .first()
+            )
+            latest_fifa = (
+                self.db.query(FifaRanking)
+                .filter(FifaRanking.team_id == team.id)
+                .order_by(FifaRanking.ranking_date.desc())
+                .first()
+            )
+            latest_xg = (
+                self.db.query(XGMetrics)
+                .filter(XGMetrics.team_id == team.id)
+                .order_by(XGMetrics.metric_date.desc())
+                .first()
+            )
+
+            elo_score = latest_elo.elo_score if latest_elo else 1500
+            igf_strength = min(1.0, max(0.0, (elo_score - 1300) / 800))
+
+            entity = TeamEntity(
+                id=team.id,
+                name=team.name,
+                fifa_code=team.fifa_code,
+                continent=team.continent,
+                elo_score=elo_score,
+                fifa_rank=latest_fifa.rank if latest_fifa else 100,
+                igf_score=igf_strength,
+            )
+            team_entities.append(entity)
+            group_mapping[team.id] = team_to_group.get(team.id, "A")
+
+        return team_entities, group_mapping
+
+    def run_simulation(self, sim_id: uuid.UUID) -> Simulation | None:
+        sim = self.get_by_id(sim_id)
+        if not sim:
+            return None
+
+        sim.status = "running"
+        self.db.commit()
+
+        team_entities, group_mapping = self._load_team_entities()
+
+        config = SimulationConfig(
+            num_simulations=sim.num_simulations,
+        )
+        self.engine.config = config
+        results = self.engine.run(team_entities, group_mapping)
+
+        for r in results:
+            sr = SimulationResult(
+                simulation_id=sim_id,
+                team_id=r.team_id,
+                group_name=r.group_name,
+                group_position=r.group_position,
+                reached_round_of_32=r.round_of_32_count,
+                reached_round_of_16=r.round_of_16_count,
+                reached_quarter_final=r.quarter_final_count,
+                reached_semi_final=r.semi_final_count,
+                reached_final=r.final_count,
+                won_tournament=r.won_count,
+                points=r.total_points,
+            )
+            self.db.add(sr)
+
+        sim.status = "completed"
+        sim.completed_at = datetime.utcnow()
+        self.db.commit()
+        self.db.refresh(sim)
+        return sim
