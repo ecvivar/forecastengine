@@ -1,0 +1,135 @@
+{
+  "api_endpoints": [
+    {
+      "label": "Health Check",
+      "method": "GET",
+      "path": "/health",
+      "mean_ms": 8.7,
+      "p50_ms": 5.87,
+      "p95_ms": 19.4,
+      "p99_ms": 19.4,
+      "min_ms": 5.54,
+      "max_ms": 19.4,
+      "samples": 5
+    },
+    {
+      "label": "List Teams (empty DB)",
+      "method": "GET",
+      "path": "/api/v1/teams",
+      "mean_ms": 8179.49,
+      "p50_ms": 8159.91,
+      "p95_ms": 8254.23,
+      "p99_ms": 8254.23,
+      "min_ms": 8137.15,
+      "max_ms": 8254.23,
+      "samples": 5
+    },
+    {
+      "label": "List Teams",
+      "method": "GET",
+      "path": "/api/v1/teams",
+      "mean_ms": 8177.67,
+      "p50_ms": 8179.59,
+      "p95_ms": 8202.31,
+      "p99_ms": 8202.31,
+      "min_ms": 8145.66,
+      "max_ms": 8202.31,
+      "samples": 5
+    },
+    {
+      "label": "List Groups",
+      "method": "GET",
+      "path": "/api/v1/groups",
+      "mean_ms": 8180.4,
+      "p50_ms": 8174.52,
+      "p95_ms": 8201.76,
+      "p99_ms": 8201.76,
+      "min_ms": 8157.22,
+      "max_ms": 8201.76,
+      "samples": 5
+    },
+    {
+      "label": "IGF Rankings",
+      "method": "GET",
+      "path": "/api/v1/rankings/igf",
+      "mean_ms": 8189.47,
+      "p50_ms": 8184.79,
+      "p95_ms": 8209.3,
+      "p99_ms": 8209.3,
+      "min_ms": 8169.82,
+      "max_ms": 8209.3,
+      "samples": 5
+    },
+    {
+      "label": "Dashboard",
+      "method": "GET",
+      "path": "/api/v1/dashboard",
+      "mean_ms": 8177.19,
+      "p50_ms": 8178.23,
+      "p95_ms": 8191.98,
+      "p99_ms": 8191.98,
+      "min_ms": 8159.98,
+      "max_ms": 8191.98,
+      "samples": 5
+    },
+    {
+      "label": "Export Matches CSV",
+      "method": "GET",
+      "path": "/api/v1/export/matches/csv",
+      "mean_ms": 9.5,
+      "p50_ms": 8.53,
+      "p95_ms": 13.61,
+      "p99_ms": 13.61,
+      "min_ms": 8.02,
+      "max_ms": 13.61,
+      "samples": 5
+    }
+  ],
+  "engine_operations": [
+    {
+      "label": "Single Match Prediction",
+      "mean_ms": 8.24,
+      "p50_ms": 8.03,
+      "p95_ms": 9.05,
+      "max_ms": 9.05,
+      "peak_memory_mb": 0.02,
+      "samples": 5
+    },
+    {
+      "label": "MC 100 simulations",
+      "mean_ms": 2011.67,
+      "p50_ms": 2.95,
+      "p95_ms": 10046.55,
+      "max_ms": 10046.55,
+      "peak_memory_mb": 28.8,
+      "samples": 5
+    },
+    {
+      "label": "MC 500 simulations",
+      "mean_ms": 14.25,
+      "p50_ms": 13.87,
+      "p95_ms": 15.08,
+      "max_ms": 15.08,
+      "peak_memory_mb": 0.01,
+      "samples": 3
+    },
+    {
+      "label": "MC 1000 simulations",
+      "mean_ms": 27.5,
+      "p50_ms": 27.51,
+      "p95_ms": 27.57,
+      "max_ms": 27.57,
+      "peak_memory_mb": 0.01,
+      "samples": 3
+    },
+    {
+      "label": "MC Engine 100 sims (serial)",
+      "mean_ms": 310.42,
+      "p50_ms": 310.94,
+      "p95_ms": 312.08,
+      "max_ms": 312.08,
+      "peak_memory_mb": 0.02,
+      "samples": 3
+    }
+  ]
+}
