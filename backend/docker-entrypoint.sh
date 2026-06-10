@@ -52,6 +52,7 @@ from app.models.match import Match
 from app.models.elo_rating import EloRating
 from app.models.fifa_ranking import FifaRanking
 from app.models.xg_metrics import XGMetrics
+from app.models import simulation  # noqa: F401 — registers Simulation + SimulationResult with SQLAlchemy registry
 
 db = SessionLocal()
 try:
