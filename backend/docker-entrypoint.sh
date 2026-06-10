@@ -145,24 +145,27 @@ finally:
     db.close()
 "
 
-# --- Numba warm-up ---
-echo "Running Numba warm-up..."
-python -c "
+# --- Numba warm-up (non-blocking — runs in background while Gunicorn starts) ---
+echo "Starting background Numba warm-up..."
+nohup python -c "
 from app.core.warmup import warmup_numba; warmup_numba()
-"
+" > /tmp/numba_warmup.log 2>&1 &
 
 # --- Start application (Gunicorn + Uvicorn workers) ---
 # WEB_CONCURRENCY: number of worker processes (default: CPU count * 2 + 1)
 # Set to 1 for development / low-traffic environments
+# PORT: Render sets this dynamically (default 10000); fallback to 8000 for Docker Compose
 WORKERS="${WEB_CONCURRENCY:-$(python -c "import os; print(max(2, os.cpu_count() or 2))")}"
-echo "Starting Gunicorn with ${WORKERS} worker(s)..."
+PORT="${PORT:-8000}"
+echo "Starting Gunicorn with ${WORKERS} worker(s) on port ${PORT}..."
 exec gunicorn app.main:app \
   --worker-class uvicorn.workers.UvicornWorker \
   --workers "${WORKERS}" \
-  --bind 0.0.0.0:8000 \
+  --bind 0.0.0.0:"${PORT}" \
   --log-level info \
   --access-logfile - \
   --error-logfile - \
   --max-requests 10000 \
   --max-requests-jitter 1000 \
-  --timeout 120
+  --timeout 120 \
+  --forwarded-allow-ips='*'

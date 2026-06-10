@@ -38,10 +38,3 @@ gunicorn==23.0.0
 
 # Observability
 sentry-sdk==2.62.0
-
-# Testing
-pytest==8.3.2
-pytest-asyncio==0.23.7
-pytest-cov==7.1.0
-# Dev
-python-dotenv==1.0.1

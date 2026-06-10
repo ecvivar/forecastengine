@@ -1,8 +1,9 @@
 FROM python:3.11-slim AS builder
 
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+COPY requirements-prod.txt .
+RUN pip install --no-cache-dir --user -r requirements-prod.txt && \
+    rm -rf /root/.cache/pip
 
 FROM python:3.11-slim
 RUN addgroup --system --gid 1001 app && \

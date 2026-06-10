@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     api_prefix: str = "/api/v1"
     debug: bool = False
 
-    database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/worldcup_forecast"
+    database_url: str = "postgresql+psycopg2://postgres:postgres@localhost:5432/worldcup_forecast"
     database_echo: bool = False
     database_pool_size: int = 10
     database_max_overflow: int = 20

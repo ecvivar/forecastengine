@@ -1,0 +1,63 @@
+# =============================================================================
+# Render Blueprint — WorldCup Forecast Engine 2026
+# =============================================================================
+# Deploy with:
+#   - Connect this repo to Render
+#   - Render auto-detects render.yaml and creates the infrastructure
+#   - Set the required env vars in Render dashboard
+# =============================================================================
+
+services:
+  # === FastAPI Backend ===
+  - type: web
+    name: wc2026-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: wc2026-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://wc2026-frontend.onrender.com
+      - key: REDIS_URL
+        value: ""  # Optional — set via dashboard if using Redis
+      - key: LOG_LEVEL
+        value: INFO
+      - key: SENTRY_DSN
+        value: ""  # Optional — set via dashboard
+      - key: SENTRY_ENVIRONMENT
+        value: production
+      - key: DB_POOL_SIZE
+        value: "10"
+      - key: DB_MAX_OVERFLOW
+        value: "20"
+      - key: CACHE_TTL
+        value: "300"
+      - key: ENGINE_DEFAULT_SIMULATIONS
+        value: "100000"
+      - key: DEBUG
+        value: "false"
+
+  # === Next.js Frontend ===
+  - type: web
+    name: wc2026-frontend
+    env: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://wc2026-backend.onrender.com/api/v1
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+
+databases:
+  - name: wc2026-db
+    databaseName: worldcup_forecast
+    plan: starter
+    region: oregon
+    postgresMajorVersion: 16
