@@ -45,6 +45,7 @@ from datetime import date, datetime, timedelta
 from app.db.session import SessionLocal
 from app.models.competition import Competition
 from app.models.team import Team
+from app.models.player import Player
 from app.models.group import Group
 from app.models.group_standing import GroupStanding
 from app.models.match import Match
