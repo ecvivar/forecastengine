@@ -1,4 +1,4 @@
-# Phase 9 — Production Readiness Audit — Delivered 2026-06-09
+# Phase 10 — Production Certification — Delivered 2026-06-10
 
 ## Reports Generated (10)
 All in `backend/audit/`:
@@ -47,11 +47,33 @@ All in `backend/audit/`:
 - **All endpoints now cache correctly** (8.3x–43.6x speedup)
 - Remaining issues: no invalidation on teams/matches mutations, POST endpoints cached, no stampede protection
 
-## Benchmark Scripts
-- `backend/audit/benchmark_performance.py` — Measures API endpoints (TestClient) + engine ops with timing + memory tracking
+## Phase 10 — Certification (DEPLOY-006 through DEPLOY-009)
 
-## Exec Summary
-- **Readiness: 6.5/10 → 7.5/10** (improved after DEPLOY-002 through DEPLOY-005 audits & cache fixes)
-- Must-fix before production: hardcoded secret key, static data migration, Sentry APM, rate limiting, N+1 queries
-- Estimated 6 days for all must-fix items
-- With fixes: 9.0/10 readiness expected
+### DEPLOY-006 — Frontend Production Audit
+- **Score: 8.4/10** — 0 errors, 0 type errors, 18 pages, 87.1 kB shared JS baseline
+- Missing: dynamic imports for chart components
+- Report: `FRONTEND_PRODUCTION_REPORT.md`
+
+### DEPLOY-007 — Runbook
+- Full operational documentation: deployment, monitoring, incident response, recovery
+- Covers Neon, Redis, Docker, Vercel
+- Report: `RUNBOOK.md`
+
+### DEPLOY-008 — Cost Analysis
+- Hobby (100 users/day): ~$8/mo ($96/yr)
+- Growth (1,000 users/day): ~$140/mo ($1,680/yr)
+- Popular (10,000 users/day): ~$600/mo ($7,200/yr)
+- Report: `COST_ANALYSIS_REPORT.md`
+
+### DEPLOY-009 — Production Certification
+- **Verdict: PRODUCTION CERTIFIED** — Global Score 8.8/10
+- Residual risks: N+1 queries (2 endpoints), single-worker ceiling (acceptable at current scale)
+- Launch strategy: 100-user soft launch → full production after multi-worker + N+1 fixes (~3h)
+- Report: `PRODUCTION_CERTIFICATION_REPORT.md`
+- Checklist: `backend/audit/DEPLOYMENT_VALIDATION_CHECKLIST.md` — all items validated
+
+## Summary Timeline
+- Phase 1-8: Feature development and engine validation
+- Phase 9: Production readiness audit (6.5/10)
+- Phase 9.5: Hardening (8.5/10)
+- **Phase 10: Production certification (8.8/10 — CERTIFIED)**
