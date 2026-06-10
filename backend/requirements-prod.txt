@@ -17,10 +17,13 @@ tenacity==9.0.0
 beautifulsoup4==4.12.3
 lxml==5.2.2
 
+starlette>=0.37.0
+
 # Processing
 pandas==2.2.2
 numpy==1.26.4
 scipy==1.14.0
+scikit-learn==1.5.1
 polars==1.5.0
 numba==0.60.0
 
