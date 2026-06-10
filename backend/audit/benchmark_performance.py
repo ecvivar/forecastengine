@@ -9,7 +9,7 @@ sys.path.insert(0, ".")
 
 os.environ["DATABASE_URL"] = "sqlite:///./test.db"
 os.environ["REDIS_URL"] = "redis://localhost:6379/0"
-os.environ["CACHE_ENABLED"] = "false"
+
 os.environ["LOG_LEVEL"] = "WARNING"
 os.environ["CORS_ORIGINS"] = "http://localhost:3000"
 

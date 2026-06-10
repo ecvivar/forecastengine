@@ -151,6 +151,18 @@ python -c "
 from app.core.warmup import warmup_numba; warmup_numba()
 "
 
-# --- Start application ---
-echo "Starting Uvicorn..."
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2 --log-level info
+# --- Start application (Gunicorn + Uvicorn workers) ---
+# WEB_CONCURRENCY: number of worker processes (default: CPU count * 2 + 1)
+# Set to 1 for development / low-traffic environments
+WORKERS="${WEB_CONCURRENCY:-$(python -c "import os; print(max(2, os.cpu_count() or 2))")}"
+echo "Starting Gunicorn with ${WORKERS} worker(s)..."
+exec gunicorn app.main:app \
+  --worker-class uvicorn.workers.UvicornWorker \
+  --workers "${WORKERS}" \
+  --bind 0.0.0.0:8000 \
+  --log-level info \
+  --access-logfile - \
+  --error-logfile - \
+  --max-requests 10000 \
+  --max-requests-jitter 1000 \
+  --timeout 120

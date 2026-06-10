@@ -15,7 +15,7 @@ sys.path.insert(0, ".")
 
 os.environ["DATABASE_URL"] = "postgresql+psycopg://postgres:postgres@localhost:5433/worldcup_forecast"
 os.environ["REDIS_URL"] = "redis://localhost:6379/0"
-os.environ["CACHE_ENABLED"] = "true"
+
 os.environ["LOG_LEVEL"] = "WARNING"
 os.environ["CORS_ORIGINS"] = "http://localhost:3000"
 os.environ["SECRET_KEY"] = "audit-secret-key-32-chars!!"

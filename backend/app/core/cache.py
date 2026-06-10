@@ -43,27 +43,36 @@ class RedisCacheService:
         self._sync: redis.Redis | None = None
         self._async: aioredis.Redis | None = None
 
-    def _get_sync(self) -> redis.Redis:
+    def _get_sync(self) -> redis.Redis | None:
+        if not settings.redis_url:
+            return None
         if self._sync is None:
             self._sync = redis.from_url(settings.redis_url, decode_responses=True)
         return self._sync
 
-    async def _get_async(self) -> aioredis.Redis:
+    async def _get_async(self) -> aioredis.Redis | None:
+        if not settings.redis_url:
+            return None
         if self._async is None:
             self._async = aioredis.from_url(settings.redis_url, decode_responses=True)
         return self._async
 
     def ping(self) -> bool:
+        client = self._get_sync()
+        if client is None:
+            return False
         try:
-            client = self._get_sync()
             return client.ping()
         except redis.RedisError:
             return False
 
     def get_sync(self, key: str) -> Any | None:
         global cache_hits, cache_misses
+        client = self._get_sync()
+        if client is None:
+            cache_misses += 1
+            return None
         try:
-            client = self._get_sync()
             val = client.get(key)
             if val is not None:
                 cache_hits += 1
@@ -76,16 +85,20 @@ class RedisCacheService:
             return None
 
     def set_sync(self, key: str, value: Any) -> None:
+        client = self._get_sync()
+        if client is None:
+            return
         try:
-            client = self._get_sync()
             ttl = _get_ttl(key)
             client.setex(key, ttl, json.dumps(value, default=str))
         except redis.RedisError as e:
             logger.warning("Cache SET error for key=%s: %s", key, e)
 
     def invalidate(self, pattern: str) -> None:
+        client = self._get_sync()
+        if client is None:
+            return
         try:
-            client = self._get_sync()
             cursor = 0
             while True:
                 cursor, keys = client.scan(cursor=cursor, match=pattern, count=100)
@@ -97,8 +110,10 @@ class RedisCacheService:
             logger.warning("Cache INVALIDATE error for pattern=%s: %s", pattern, e)
 
     def flush_all(self) -> None:
+        client = self._get_sync()
+        if client is None:
+            return
         try:
-            client = self._get_sync()
             client.flushdb()
         except redis.RedisError as e:
             logger.warning("Cache FLUSH error: %s", e)

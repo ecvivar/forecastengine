@@ -53,17 +53,38 @@ def simulate_scenario(request: Request, req: ScenarioRequest, db: Session = Depe
 
     mod_map = {m.team_name.lower(): m for m in req.modifications}
 
+    all_team_ids = [team.id for team in teams]
+
+    latest_elo_by_team = {}
+    elo_rows = (
+        db.query(EloRating)
+        .filter(EloRating.team_id.in_(all_team_ids))
+        .order_by(EloRating.team_id, EloRating.rating_date.desc())
+        .all()
+    )
+    seen_elo = set()
+    for r in elo_rows:
+        if r.team_id not in seen_elo:
+            latest_elo_by_team[r.team_id] = r.elo_score
+            seen_elo.add(r.team_id)
+
+    standing_by_team = {}
+    standing_rows = (
+        db.query(GroupStanding)
+        .options(joinedload(GroupStanding.group))
+        .filter(GroupStanding.team_id.in_(all_team_ids))
+        .all()
+    )
+    for s in standing_rows:
+        gname = s.group.name if s.group else "?"
+        if s.team_id not in standing_by_team:
+            standing_by_team[s.team_id] = gname
+
     for team in teams:
         team_ids.append(team.id)
         team_names.append(team.name)
 
-        latest_elo = (
-            db.query(EloRating)
-            .filter(EloRating.team_id == team.id)
-            .order_by(EloRating.rating_date.desc())
-            .first()
-        )
-        elo_score = latest_elo.elo_score if latest_elo else 1500
+        elo_score = latest_elo_by_team.get(team.id, 1500)
         igf = min(100, max(0, (elo_score - 1300) / 8))
         strength = igf / 50.0
 
@@ -73,13 +94,7 @@ def simulate_scenario(request: Request, req: ScenarioRequest, db: Session = Depe
 
         strengths.append(strength)
 
-        standing = (
-            db.query(GroupStanding)
-            .options(joinedload(GroupStanding.group))
-            .filter(GroupStanding.team_id == team.id)
-            .first()
-        )
-        group_names.append(standing.group.name if standing and standing.group else "?")
+        group_names.append(standing_by_team.get(team.id, "?"))
 
     unique_groups = sorted(set(group_names))
     group_to_idx = {g: i for i, g in enumerate(unique_groups)}
