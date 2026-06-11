@@ -86,7 +86,15 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# --- CORS (explicit origins) ---
+# --- Middleware stack (outer=last added) ---
+# CORSMiddleware MUST be outermost so it handles OPTIONS preflight before
+# any other middleware (e.g. SlowAPIMiddleware) can reject the request.
+app.add_middleware(SlowAPIMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(MetricsMiddleware)
+app.add_middleware(RequestLogMiddleware)
+
+# --- CORS (explicit origins, added last = outermost) ---
 origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
@@ -95,12 +103,6 @@ app.add_middleware(
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
-
-# --- Middleware stack (order: bottom-up, outer=last added) ---
-app.add_middleware(SlowAPIMiddleware)
-app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(MetricsMiddleware)
-app.add_middleware(RequestLogMiddleware)
 
 # --- Error handlers ---
 from fastapi import HTTPException
