@@ -94,12 +94,10 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(MetricsMiddleware)
 app.add_middleware(RequestLogMiddleware)
 
-# --- CORS (explicit origins, added last = outermost) ---
-origins = [o.strip().rstrip("/") for o in settings.cors_origins.split(",") if o.strip()]
+# --- CORS (wildcard — API uses Authorization header, not cookies) ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
 )
