@@ -10,11 +10,12 @@ RUN addgroup --system --gid 1001 app && \
     adduser --system --uid 1001 --gid 1001 app
 WORKDIR /app
 COPY --from=builder /usr/local /usr/local
-COPY . .
+COPY . /app/
 RUN chown -R app:app /app && chmod +x /app/docker-entrypoint.sh
 USER app
 EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 --start-period=15s \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
-LABEL cache-buster="v1"
+LABEL cache-buster="v2"
+RUN echo "BUILD_TAG=REBUILD_$(date +%s)" > /tmp/build-info.txt
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
