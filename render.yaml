@@ -23,7 +23,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://wc2026-frontend.onrender.com
+        value: https://forecastengine-tau.vercel.app
       - key: REDIS_URL
         value: ""  # Optional — set via dashboard if using Redis
       - key: LOG_LEVEL
