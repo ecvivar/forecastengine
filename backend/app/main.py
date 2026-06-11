@@ -95,7 +95,7 @@ app.add_middleware(MetricsMiddleware)
 app.add_middleware(RequestLogMiddleware)
 
 # --- CORS (explicit origins, added last = outermost) ---
-origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
+origins = [o.strip().rstrip("/") for o in settings.cors_origins.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
