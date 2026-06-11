@@ -1,6 +1,6 @@
 # Deployment Guide — WorldCup Forecast Engine 2026
 
-**Date:** 2026-06-10 | **Version:** 1.1.0
+**Date:** 2026-06-11 | **Version:** 1.2.0
 
 ---
 
@@ -169,7 +169,23 @@ Or connect your GitHub repo in Vercel Dashboard:
 |--------|------|-----|
 | Removed `@next/swc-win32-x64-msvc` | `frontend/package.json` | Windows-native SWC binary at version `^16.2.7` — doesn't exist on Linux and mismatched Next.js 14 |
 
-### 5.3 New Files
+### 5.3 CORS Fixes
+
+| Change | File | Why |
+|--------|------|-----|
+| CORSMiddleware moved to outermost | `backend/app/main.py:92-105` | SlowAPIMiddleware was intercepting OPTIONS before CORS could handle it. Middleware stack: `CORSMiddleware → RequestLog → Metrics → SecurityHeaders → SlowAPI → Router` |
+| CORS wildcard origin, no credentials | `backend/app/main.py:97-103` | Starlette 0.40+ CORSMiddleware returns 400 "Disallowed CORS origin" when origin not in list. API uses `Authorization` header (not cookies), so `allow_origins=["*"]` works without `allow_credentials` |
+| Trailing slash sanitization | `backend/app/main.py:98` | `.rstrip("/")` prevents origin mismatch when `CORS_ORIGINS=https://domain.com/` (slash vs no-slash) — defence-in-depth |
+| Removed trailing slash from `.env` | `.env:18` | `CORS_ORIGINS` had trailing slash causing exact-match failure against browser's Origin header (no slash) |
+
+### 5.4 Docker Build / Deploy Fixes
+
+| Change | File | Why |
+|--------|------|-----|
+| Force rebuild via Dockerfile change | `backend/Dockerfile:13,19-20` | Render caches Docker images by Dockerfile hash; code changes in `COPY . .` are ignored if Dockerfile text hasn't changed. Changed `COPY . .` → `COPY . /app/`, added `LABEL cache-buster="vN"` and `RUN echo "BUILD_TAG=..."` to invalidate cache on each deploy |
+| Clear build cache required for deploys | Render Dashboard | After code-only pushes, go to Render Dashboard → Deploys → "Manual Deploy" → "Clear build cache & Deploy" to force a fresh build |
+
+### 5.5 New Files
 
 | File | Purpose |
 |------|---------|
@@ -191,7 +207,29 @@ Or connect your GitHub repo in Vercel Dashboard:
 | `No open HTTP ports detected` | Port scan before Gunicorn binds | Normal — resolves automatically |
 | Container exits immediately | Wrong `DATABASE_URL` scheme or missing env vars | Check `postgresql+psycopg2://` format and required vars |
 
-### 6.2 Frontend
+### 6.2 CORS Preflight Returns 400 "Disallowed CORS origin"
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| OPTIONS preflight returns 400, body says "Disallowed CORS origin" | The browser's Origin is not in the `allow_origins` list. Starlette 0.40+ returns 400 (not 200) for disallowed origins | Set `CORS_ORIGINS` env var in Render dashboard to the exact frontend URL (no trailing slash). Or use `allow_origins=["*"]` if API uses token auth (no cookies) |
+| After setting env var, still getting 400 | Render caches Docker image by Dockerfile hash; code-only pushes don't trigger rebuild | Trigger "Clear build cache & Deploy" from Render Dashboard → Deploys → Manual Deploy |
+| `access-control-allow-credentials: true` present but no `access-control-allow-origin` | CORSMiddleware running with outdated config | Same as above — force rebuild with Dockerfile change |
+| OPTIONS returns 405 (not 400) | CORSMiddleware not intercepting OPTIONS at all | CORSMiddleware must be outermost (added last). Verify middleware order in `main.py` |
+| Works with `curl` but not in browser | Browser sends preflight (OPTIONS) with `Access-Control-Request-Method` header; curl normally doesn't | Test with `curl -X OPTIONS -H "Origin: https://..." -H "Access-Control-Request-Method: GET" https://...` to reproduce exact browser behavior |
+
+### 6.3 Docker Build Caching on Render
+
+Render caches Docker builds aggressively. Code-only changes inside `COPY . .` do NOT trigger a rebuild — Render checks the Dockerfile content hash only.
+
+**To force a rebuild after code changes:**
+
+1. Modify the `Dockerfile` (e.g. increment `LABEL cache-buster="vN"`)
+2. Push to GitHub
+3. OR trigger manually: Render Dashboard → Deploys → Manual Deploy → "Clear build cache & Deploy"
+
+**To avoid this in the future:** Add a unique build-time marker to the Dockerfile with each deploy (e.g., `LABEL cache-buster="v<N>"`).
+
+### 6.4 Frontend
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
@@ -199,7 +237,7 @@ Or connect your GitHub repo in Vercel Dashboard:
 | Pages show no data | Wrong `NEXT_PUBLIC_API_URL` or CORS | Verify URL ends with `/api/v1` and `CORS_ORIGINS` includes frontend domain |
 | 502 Bad Gateway | Backend not ready | Wait for startup (~30s), check Render logs |
 
-### 6.3 Health Endpoints
+### 6.5 Health Endpoints
 
 ```bash
 # Backend health
@@ -219,8 +257,10 @@ curl https://your-backend.onrender.com/api/v1/teams
 
 ```bash
 # Backend — Render
-#   Push to main → auto-deploy via GitHub integration
-#   Or manual: Render Dashboard → Manual Deploy
+#   Auto-deploy on git push (only if Dockerfile changed)
+#   Force rebuild after code-only pushes:
+#     Render Dashboard → Deploys → Manual Deploy → "Clear build cache & Deploy"
+#   Or increment LABEL cache-buster in Dockerfile before pushing
 
 # Frontend — Vercel
 cd frontend
@@ -229,4 +269,10 @@ vercel --prod
 # Local build test
 cd backend && docker build -t wc2026-backend .
 cd frontend && npm run build
+
+# Test CORS preflight (must return 200 with access-control-allow-origin header)
+curl -X OPTIONS \
+  -H "Origin: https://your-frontend.vercel.app" \
+  -H "Access-Control-Request-Method: GET" \
+  -v https://your-backend.onrender.com/api/v1/dashboard
 ```
