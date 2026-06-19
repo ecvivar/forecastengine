@@ -19,13 +19,13 @@ from app.services.match_service import MatchService
 router = APIRouter(tags=["Analysis"])
 
 
-@router.get("/groups/{group_id}/analysis")
+@router.get("/groups/{group_name}/analysis")
 @cached("analysis:group")
-def analyze_group(group_id: uuid.UUID, db: Session = Depends(get_db)):
+def analyze_group(group_name: str, db: Session = Depends(get_db)):
     group = (
         db.query(Group)
         .options(joinedload(Group.standings).joinedload(GroupStanding.team))
-        .filter(Group.id == group_id)
+        .filter(Group.name == group_name.upper())
         .first()
     )
     if not group:

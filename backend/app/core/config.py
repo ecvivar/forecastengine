@@ -1,11 +1,12 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from functools import lru_cache
-from pydantic import field_validator
+from pydantic import Field, field_validator
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", case_sensitive=False
+        env_file=".env", env_file_encoding="utf-8", case_sensitive=False,
+        extra="ignore", populate_by_name=True,
     )
 
     project_name: str = "WorldCup Forecast Engine 2026"
@@ -15,8 +16,8 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+psycopg2://postgres:postgres@localhost:5432/worldcup_forecast"
     database_echo: bool = False
-    database_pool_size: int = 10
-    database_max_overflow: int = 20
+    database_pool_size: int = Field(default=10, alias="DATABASE_POOL_SIZE")
+    database_max_overflow: int = Field(default=20, alias="DATABASE_MAX_OVERFLOW")
 
     redis_url: str = "redis://localhost:6379/0"
     cache_ttl: int = 300
@@ -56,6 +57,7 @@ class Settings(BaseSettings):
 
     sentry_dsn: str = ""
     sentry_environment: str = "production"
+    sentry_traces_sample_rate: float = Field(default=0.1, alias="SENTRY_TRACES_SAMPLE_RATE")
 
     @field_validator("secret_key")
     @classmethod

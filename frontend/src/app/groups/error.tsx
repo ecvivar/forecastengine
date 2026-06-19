@@ -23,7 +23,7 @@ export default function GroupsError({
           <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
           <h2 className="text-xl font-bold mb-2">Failed to load groups</h2>
           <p className="text-sm text-gray-500 mb-6">
-            Could not load group data. Ensure the backend API is running.
+            {error.message || "Could not load group data. Ensure the backend API is running."}
           </p>
           <div className="flex items-center justify-center gap-3">
             <button

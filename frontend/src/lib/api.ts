@@ -1,14 +1,27 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
 async function fetchJSON<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
+  const url = `${API_URL}${path}`;
+  const res = await fetch(url, {
     headers: { "Content-Type": "application/json", ...options?.headers },
     ...options,
   });
   if (!res.ok) {
-    throw new Error(`API error: ${res.status} ${res.statusText}`);
+    let detail = "";
+    try {
+      const body = await res.json();
+      detail = body?.detail ? ` - ${body.detail}` : "";
+    } catch {
+      detail = "";
+    }
+    throw new Error(`API error ${res.status} ${res.statusText} for ${url}${detail}`);
   }
   return res.json();
+}
+
+export function getApiErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return "Unknown API error";
 }
 
 // ---- Domain Types ----
@@ -53,6 +66,8 @@ export interface GroupStanding {
   goals_against: number;
   goal_difference: number;
   points: number;
+  xg_for: number;
+  xg_against: number;
   qualified: boolean;
 }
 
@@ -373,8 +388,8 @@ export const api = {
   },
   groups: {
     list: () => fetchJSON<GroupDetail[]>("/groups"),
-    get: (id: string) => fetchJSON<GroupDetail>(`/groups/${id}`),
-    analysis: (id: string) => fetchJSON<any>(`/groups/${id}/analysis`),
+    get: (name: string) => fetchJSON<GroupDetail>(`/groups/${encodeURIComponent(name)}`),
+    analysis: (name: string) => fetchJSON<any>(`/groups/${encodeURIComponent(name)}/analysis`),
   },
   rankings: {
     elo: () => fetchJSON<any[]>("/rankings/elo"),
