@@ -106,9 +106,9 @@ def simulate_scenario(request: Request, req: ScenarioRequest, db: Session = Depe
     stage_counts = np.zeros((num_teams, 7), dtype=np.int32)
 
     for sim_idx in range(req.num_scenarios):
-        stages = run_single_tournament_py(strengths_arr, assignments, num_teams)
+        sim_result = run_single_tournament_py(strengths_arr, assignments, num_teams)
         for t in range(num_teams):
-            stage = stages[t]
+            stage = sim_result[t, 0]
             if stage >= 1:
                 stage_counts[t, 0] += 1
             if stage >= 2:
@@ -121,6 +121,7 @@ def simulate_scenario(request: Request, req: ScenarioRequest, db: Session = Depe
                 stage_counts[t, 4] += 1
             if stage >= 6:
                 stage_counts[t, 5] += 1
+            stage_counts[t, 6] += sim_result[t, 2]  # accumulate group points
 
     n = max(req.num_scenarios, 1)
     results = []
@@ -132,7 +133,7 @@ def simulate_scenario(request: Request, req: ScenarioRequest, db: Session = Depe
             "sf_prob": round(stage_counts[i, 3] / n * 100, 1),
             "qf_prob": round(stage_counts[i, 2] / n * 100, 1),
             "r32_prob": round(stage_counts[i, 0] / n * 100, 1),
-            "avg_group_points": 0.0,
+            "avg_group_points": round(stage_counts[i, 6] / n, 2),
         })
 
     results.sort(key=lambda r: r["win_prob"], reverse=True)

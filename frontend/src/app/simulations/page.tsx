@@ -5,18 +5,20 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
-import { api, type Simulation, type SimulationDetail } from "@/lib/api";
+import { api, getApiErrorMessage, type Simulation, type SimulationDetail } from "@/lib/api";
 import { formatDateTime } from "@/lib/utils";
-import { Play, Loader2, Trophy, BarChart4 } from "lucide-react";
+import { Play, Loader2, Trophy, BarChart4, AlertTriangle, RefreshCw } from "lucide-react";
 
 export default function SimulationsPage() {
   const [sims, setSims] = useState<Simulation[]>([]);
   const [details, setDetails] = useState<Record<string, SimulationDetail>>({});
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadSims = () => {
     setLoading(true);
+    setError(null);
     api.simulations
       .list()
       .then(async (list) => {
@@ -28,13 +30,13 @@ export default function SimulationsPage() {
               const sd = await api.simulations.get(s.id);
               d[s.id] = sd;
             } catch {
-              // ignore
+              // ignore load errors per-sim
             }
           })
         );
         setDetails(d);
       })
-      .catch(() => {})
+      .catch((err) => setError(getApiErrorMessage(err)))
       .finally(() => setLoading(false));
   };
 
@@ -45,8 +47,9 @@ export default function SimulationsPage() {
   const runNew = async () => {
     setRunning(true);
     try {
+      const comp = await api.competitions.current();
       const created = await api.simulations.create({
-        competition_id: "00000000-0000-0000-0000-000000000001",
+        competition_id: comp.id,
         num_simulations: 10000,
       });
       await api.simulations.run(created.id);
@@ -58,6 +61,27 @@ export default function SimulationsPage() {
   };
 
   if (loading) return <SkeletonPage />;
+
+  if (error) {
+    return (
+      <div className="container-page flex items-center justify-center min-h-[60vh]">
+        <Card className="max-w-md w-full text-center">
+          <CardContent className="p-8">
+            <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+            <h2 className="text-xl font-bold mb-2">Failed to load simulations</h2>
+            <p className="text-sm text-gray-500 mb-6">{error}</p>
+            <button
+              onClick={loadSims}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Try again
+            </button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const getTopChampion = (simId: string): { name: string; prob: number } | null => {
     const d = details[simId];

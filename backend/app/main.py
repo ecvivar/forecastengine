@@ -14,6 +14,7 @@ from app.api import (
     calibration,
     calibration_refinement,
     comparison,
+    competitions,
     dashboard,
     export,
     groups,
@@ -126,6 +127,7 @@ app.include_router(analysis.router, prefix=settings.api_prefix)
 app.include_router(calibration_refinement.router, prefix=settings.api_prefix)
 app.include_router(dashboard.router, prefix=settings.api_prefix)
 app.include_router(comparison.router, prefix=settings.api_prefix)
+app.include_router(competitions.router, prefix=settings.api_prefix)
 app.include_router(export.router, prefix=settings.api_prefix)
 app.include_router(scenarios.router, prefix=settings.api_prefix)
 

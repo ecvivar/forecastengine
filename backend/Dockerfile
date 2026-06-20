@@ -11,7 +11,7 @@ RUN addgroup --system --gid 1001 app && \
 WORKDIR /app
 COPY --from=builder /usr/local /usr/local
 COPY . /app/
-RUN chown -R app:app /app && chmod +x /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh && chown -R app:app /app
 USER app
 EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=5s --retries=5 --start-period=15s \

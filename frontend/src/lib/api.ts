@@ -200,6 +200,16 @@ export interface DashboardGroup {
   teams: DashboardGroupTeam[];
 }
 
+export interface Competition {
+  id: string;
+  name: string;
+  season: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  competition_type: string;
+  format: string;
+}
+
 export interface DashboardData {
   total_teams: number;
   total_matches: number;
@@ -390,6 +400,9 @@ export const api = {
     list: () => fetchJSON<GroupDetail[]>("/groups"),
     get: (name: string) => fetchJSON<GroupDetail>(`/groups/${encodeURIComponent(name)}`),
     analysis: (name: string) => fetchJSON<any>(`/groups/${encodeURIComponent(name)}/analysis`),
+  },
+  competitions: {
+    current: () => fetchJSON<Competition>("/competitions/current"),
   },
   rankings: {
     elo: () => fetchJSON<any[]>("/rankings/elo"),

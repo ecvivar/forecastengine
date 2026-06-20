@@ -230,14 +230,15 @@ def run_single_tournament_py(
 ) -> np.ndarray:
     """
     Run a single complete tournament simulation.
-    Returns (num_teams,) array: max stage reached
-    0=group, 1=R32, 2=R16, 3=QF, 4=SF, 5=Final, 6=Winner
-    Plus extra info encoded later.
+    Returns (num_teams, 3) array:
+      [0] = max stage reached (0=group, 1=R32, 2=R16, 3=QF, 4=SF, 5=Final, 6=Winner)
+      [1] = group position (1-4)
+      [2] = group points (0-9 integer sum)
     """
     if seed is not None:
         np.random.seed(seed)
 
-    stages = np.zeros(num_teams, dtype=np.int32)
+    result = np.zeros((num_teams, 3), dtype=np.int32)
     group_results = simulate_group_stage_numba(strengths, assignments)
 
     all_winners = np.empty(NUM_GROUPS, dtype=np.int64)
@@ -261,13 +262,18 @@ def run_single_tournament_py(
 
         ranking = rank_group_fifa(pts, gd, gf, ga, indices)
 
+        # Assign group position (1-4) and points for every team in this group
+        for pos, idx in enumerate(ranking):
+            result[idx, 1] = pos + 1
+            result[idx, 2] = int(group_results[idx, 0])
+
         winner = ranking[0]
         runner_up = ranking[1]
         third_pl = ranking[2]
 
-        stages[winner] = 1
-        stages[runner_up] = 1
-        stages[third_pl] = 1
+        result[winner, 0] = 1
+        result[runner_up, 0] = 1
+        result[third_pl, 0] = 1
 
         all_winners[g] = winner
         all_runners_up[g] = runner_up
@@ -285,13 +291,13 @@ def run_single_tournament_py(
     for g in range(NUM_GROUPS):
         t = third_placed_teams[g]
         if t >= 0:
-            stages[t] = 0  # default: group elimination
+            result[t, 0] = 0  # default: group elimination
     for t in best_third:
         if t >= 0:
-            stages[t] = 1  # qualified for R32
+            result[t, 0] = 1  # qualified for R32
 
     if NUM_GROUPS < 1:
-        return stages
+        return result
 
     # Build Round of 32 bracket
     # FIFA 2026: 12 group winners + 12 runners-up + 8 best third = 32 teams
@@ -324,33 +330,33 @@ def run_single_tournament_py(
     r32_winners = run_knockout_round(bracket_r32, strengths)
     for idx in r32_winners:
         if idx >= 0:
-            stages[idx] = 2
+            result[idx, 0] = 2
 
     # R16
     r16_winners = run_knockout_round(r32_winners, strengths)
     for idx in r16_winners:
         if idx >= 0:
-            stages[idx] = 3
+            result[idx, 0] = 3
 
     # QF
     qf_winners = run_knockout_round(r16_winners, strengths)
     for idx in qf_winners:
         if idx >= 0:
-            stages[idx] = 4
+            result[idx, 0] = 4
 
     # SF
     sf_winners = run_knockout_round(qf_winners, strengths)
     for idx in sf_winners:
         if idx >= 0:
-            stages[idx] = 5
+            result[idx, 0] = 5
 
     # Final
     if len(sf_winners) >= 2 and sf_winners[0] >= 0 and sf_winners[1] >= 0:
         final_winner = run_knockout_round(sf_winners, strengths)
         if len(final_winner) >= 1 and final_winner[0] >= 0:
-            stages[final_winner[0]] = 6
+            result[final_winner[0], 0] = 6
 
-    return stages
+    return result
 
 
 class MonteCarloEngine:
@@ -396,9 +402,12 @@ class MonteCarloEngine:
         results = np.zeros((num_teams, 10), dtype=np.int32)
 
         for sim in range(n_sims):
-            stages = run_single_tournament_py(strengths, assignments, num_teams)
+            sim_result = run_single_tournament_py(strengths, assignments, num_teams)
             for t in range(num_teams):
-                stage = stages[t]
+                stage = sim_result[t, 0]
+                position = sim_result[t, 1]
+                points = sim_result[t, 2]
+
                 if stage >= 1:
                     results[t, 0] += 1  # R32
                 if stage >= 2:
@@ -411,6 +420,17 @@ class MonteCarloEngine:
                     results[t, 4] += 1  # Final
                 if stage >= 6:
                     results[t, 5] += 1  # Winner
+
+                # Track group position counts (columns 6-8)
+                if position == 1:
+                    results[t, 6] += 1
+                elif position == 2:
+                    results[t, 7] += 1
+                elif position == 3:
+                    results[t, 8] += 1
+
+                # Accumulate total group points (column 9)
+                results[t, 9] += points
 
             if (sim + 1) % 10000 == 0:
                 logger.info(f"  {sim + 1}/{n_sims} simulations completed")
@@ -451,6 +471,18 @@ class MonteCarloEngine:
     ) -> list[TournamentResult]:
         outputs = []
         for i in range(len(team_ids)):
+            pos1 = int(results[i, 6])
+            pos2 = int(results[i, 7])
+            pos3 = int(results[i, 8])
+            pos4 = n_sims - pos1 - pos2 - pos3
+
+            if n_sims > 0:
+                expected_position = float(1 * pos1 + 2 * pos2 + 3 * pos3 + 4 * pos4) / n_sims
+                avg_points = float(results[i, 9]) / n_sims
+            else:
+                expected_position = 0.0
+                avg_points = 0.0
+
             outputs.append(
                 TournamentResult(
                     team_id=team_ids[i],
@@ -462,7 +494,12 @@ class MonteCarloEngine:
                     semi_final_count=int(results[i, 3]),
                     final_count=int(results[i, 4]),
                     won_count=int(results[i, 5]),
-                    total_points=float(results[i, 9]),
+                    group_position=int(round(expected_position)),
+                    total_points=avg_points,
+                    pos1_count=pos1,
+                    pos2_count=pos2,
+                    pos3_count=pos3,
+                    pos4_count=pos4,
                 )
             )
         return outputs
