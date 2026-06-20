@@ -111,6 +111,9 @@ class SimulationService:
             elo_score = latest_elo.elo_score if latest_elo else 1500
             igf_strength = min(1.0, max(0.0, (elo_score - 1300) / 800))
 
+            xg_for = latest_xg.xg_for if latest_xg else None
+            xg_against = latest_xg.xg_against if latest_xg else None
+
             entity = TeamEntity(
                 id=team.id,
                 name=team.name,
@@ -119,6 +122,8 @@ class SimulationService:
                 elo_score=elo_score,
                 fifa_rank=latest_fifa.rank if latest_fifa else 100,
                 igf_score=igf_strength,
+                xg_for=xg_for,
+                xg_against=xg_against,
             )
             team_entities.append(entity)
             group_mapping[team.id] = team_to_group.get(team.id, "A")

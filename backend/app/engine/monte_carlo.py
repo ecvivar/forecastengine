@@ -21,6 +21,7 @@ from numba import njit
 
 from app.core.config import get_settings
 from app.domain.entities import SimulationConfig, TeamEntity, TournamentResult
+from app.engine.match_prediction import MatchPredictionEngine
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -367,6 +368,14 @@ class MonteCarloEngine:
 
     def __init__(self, config: SimulationConfig | None = None):
         self.config = config or SimulationConfig()
+        self._pred_engine = MatchPredictionEngine()
+
+    def _compute_strength_array(self, teams: list[TeamEntity]) -> np.ndarray:
+        """Compute overall_strength array via hybrid Elo + xG model."""
+        return np.array(
+            [self._pred_engine.compute_team_strength(t).overall_strength for t in teams],
+            dtype=np.float64,
+        )
 
     def run(
         self,
@@ -378,7 +387,7 @@ class MonteCarloEngine:
 
         team_ids = [t.id for t in teams]
         team_names = [t.name for t in teams]
-        strengths = np.array([t.igf_score / 50.0 for t in teams], dtype=np.float64)
+        strengths = self._compute_strength_array(teams)
 
         group_names = [group_mapping.get(t.id, "?") for t in teams]
         unique_groups = sorted(set(group_names))

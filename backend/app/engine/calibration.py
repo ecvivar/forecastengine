@@ -20,7 +20,8 @@ from app.domain.calibration import (
     OutcomeCalibrationCurve,
 )
 from app.domain.entities import MatchPredictionResult, TeamEntity
-from app.engine.match_prediction import MatchPredictionConfig, MatchPredictionEngine
+from app.domain.entities import PredictionConfig
+from app.engine.match_prediction import MatchPredictionEngine
 
 logger = logging.getLogger(__name__)
 

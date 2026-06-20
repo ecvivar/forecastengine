@@ -342,8 +342,8 @@ class BiasValidator:
         if hasattr(engine.config, "calibration_adjustments"):
             engine.config.calibration_adjustments = adj_config
         else:
-            from app.engine.match_prediction import MatchPredictionConfig
-            engine.config = MatchPredictionConfig(calibration_adjustments=adj_config)
+            from app.domain.entities import PredictionConfig
+            engine.config = PredictionConfig(calibration_adjustments=adj_config)
 
         report_after = cal_engine.calibrate(historical_matches, home_advantage=False, model_type="full")
         after_brier = report_after.overall.brier_score

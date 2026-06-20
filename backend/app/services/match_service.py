@@ -2,8 +2,8 @@ import uuid
 
 from sqlalchemy.orm import Session, joinedload
 
-from app.domain.entities import TeamEntity
-from app.engine.match_prediction import MatchPredictionConfig, MatchPredictionEngine
+from app.domain.entities import PredictionConfig, TeamEntity
+from app.engine.match_prediction import MatchPredictionEngine
 from app.models.elo_rating import EloRating
 from app.models.match import Match
 from app.models.team import Team
@@ -57,8 +57,6 @@ class MatchService:
             .first()
         )
         elo_score = latest_elo.elo_score if latest_elo else 1500
-        xg_for = latest_xg.xg_for if latest_xg else 1.0
-        xg_against = latest_xg.xg_against if latest_xg else 1.0
         igf_strength = min(100.0, max(0.0, (elo_score - 1300) / 8))
 
         return TeamEntity(
@@ -68,6 +66,8 @@ class MatchService:
             continent=team.continent,
             elo_score=elo_score,
             igf_score=igf_strength,
+            xg_for=latest_xg.xg_for if latest_xg else None,
+            xg_against=latest_xg.xg_against if latest_xg else None,
         )
 
     def get_predictions(self, match_id: uuid.UUID) -> MatchPrediction | None:

@@ -45,6 +45,8 @@ class TeamEntity:
     elo_score: int = 1500
     fifa_rank: int | None = None
     igf_score: float = 0.0
+    xg_for: float | None = None
+    xg_against: float | None = None
 
 
 @dataclass
@@ -128,6 +130,28 @@ class GroupAnalysis:
     favorite_id: uuid.UUID
     outsider_id: uuid.UUID
     surprise_risk: float
+
+
+@dataclass
+class TeamStrength:
+    attack_strength: float = 1.0
+    defense_strength: float = 1.0
+    overall_strength: float = 1.0
+
+
+@dataclass
+class PredictionConfig:
+    elo_weight: float = 0.40
+    xg_attack_weight: float = 0.30
+    xg_defense_weight: float = 0.20
+    fifa_weight: float = 0.10
+    home_advantage: float = 0.08
+    dixon_coles_tau: float = 0.1
+    bayesian_prior_strength: float = 0.5
+    max_goals: int = 10
+    league_avg_goals: float = 1.25
+    top_n_scores: int = 10
+    calibration_adjustments: dict | None = None
 
 
 @dataclass

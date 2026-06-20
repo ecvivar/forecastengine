@@ -2,7 +2,7 @@ import logging
 
 from app.data.historical_matches import ALL_HISTORICAL_MATCHES
 from app.engine.calibration import CalibrationEngine
-from app.engine.match_prediction import MatchPredictionConfig
+from app.domain.entities import PredictionConfig
 from app.schemas.calibration import (
     BenchmarkReportResponse,
     BiasReportResponse,
@@ -68,8 +68,8 @@ class CalibrationService:
         return dict(_active_adjustments)
 
     @staticmethod
-    def build_config_with_adjustments() -> MatchPredictionConfig:
-        return MatchPredictionConfig(
+    def build_config_with_adjustments() -> PredictionConfig:
+        return PredictionConfig(
             calibration_adjustments=dict(_active_adjustments) if _active_adjustments else None,
         )
 

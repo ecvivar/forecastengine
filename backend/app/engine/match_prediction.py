@@ -1,14 +1,31 @@
 """
-Match Prediction Engine.
+Match Prediction Engine v2 — Hybrid Model.
 
-Implements:
-- Poisson regression (independent goals)
-- Dixon-Coles (low-score correction)
-- Elo-based probability
-- Bayesian updating (prior + observed)
-- Confidence Index, Surprise Risk, betting markets
+Integrates:
+- Elo rating (40%)
+- xG attack strength (30%)
+- xG defense strength (20%)
+- FIFA ranking (10%)
 
-All methods return full MatchPredictionResult with all derived metrics.
+Architecture:
+  TeamEntity (raw data)
+      |
+      v
+  TeamStrength (attack, defense, overall)
+      |
+      v
+  Poisson(attack * defense * home_advantage)
+      |
+      v
+  Dixon-Coles (low-score correction)
+      |
+      v
+  Bayesian update (reduced Elo prior)
+      |
+      v
+  MatchPredictionResult
+
+Monte Carlo uses overall_strength directly.
 """
 
 import logging
@@ -17,27 +34,26 @@ from math import exp, factorial
 
 import numpy as np
 
-from app.domain.entities import ConfidenceLevel, MatchPredictionResult, TeamEntity
+from app.domain.entities import (
+    ConfidenceLevel,
+    MatchPredictionResult,
+    PredictionConfig,
+    TeamEntity,
+    TeamStrength,
+)
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class MatchPredictionConfig:
-    max_goals: int = 10
-    dixon_coles_tau: float = 0.1
-    elo_k_factor: int = 32
-    home_advantage: float = 0.08
-    bayesian_prior_strength: float = 2.0
-    top_n_scores: int = 10
-    calibration_adjustments: dict | None = None
-
-
 class MatchPredictionEngine:
-    """Computes match outcome probabilities using multiple methods."""
+    """Computes match outcome probabilities using a hybrid Elo + xG model."""
 
-    def __init__(self, config: MatchPredictionConfig | None = None):
-        self.config = config or MatchPredictionConfig()
+    def __init__(self, config: PredictionConfig | None = None):
+        self.config = config or PredictionConfig()
+
+    # ------------------------------------------------------------------
+    # PUBLIC API
+    # ------------------------------------------------------------------
 
     def predict_full(
         self,
@@ -47,82 +63,61 @@ class MatchPredictionEngine:
     ) -> MatchPredictionResult:
         """
         Full prediction pipeline:
-        1. Poisson baseline with Dixon-Coles adjustment
-        2. Bayesian update using historical variance prior
-        3. Confidence Index calculation
-        4. Surprise Risk calculation
-        5. Betting market probabilities (BTTS, Over/Under, CS)
+          1. TeamStrength for home & away
+          2. Attack/defence Poisson → Dixon-Coles
+          3. Bayesian update (reduced Elo prior)
+          4. Confidence, Surprise Risk, betting markets
         """
-        # Step 1: Dixon-Coles adjusted prediction
-        dc_result = self.predict_dixon_coles(home_team, away_team, home_advantage)
+        home_s = self._compute_team_strength(home_team)
+        away_s = self._compute_team_strength(away_team)
 
-        # Step 2: Bayesian update
+        # Step 1 — Dixon-Coles adjusted prediction
+        dc_result = self._predict_dixon_coles(home_s, away_s, home_advantage)
+
+        # Step 2 — Bayesian update (reduced prior)
         bayes = self._bayesian_update(
-            dc_result.home_win_prob,
-            dc_result.draw_prob,
-            dc_result.away_win_prob,
+            dc_result["home_win"],
+            dc_result["draw"],
+            dc_result["away_win"],
             home_team.elo_score,
             away_team.elo_score,
         )
 
-        # Step 3: Confidence Index (0-100)
-        confidence = self._compute_confidence(
-            home_team.elo_score,
-            away_team.elo_score,
-            home_team.igf_score,
-            away_team.igf_score,
-        )
-
+        # Step 3 — Confidence Index
+        confidence = self._compute_confidence(home_team, away_team, home_s, away_s)
         confidence_level = self._classify_confidence(confidence)
 
-        # Step 3b: Calibration adjustments (from historical bias analysis)
+        # Step 3b — Calibration adjustments
         if self.config.calibration_adjustments:
-            adjusted_probs = self._apply_calibration_adjustments(
+            bayes = self._apply_calibration_adjustments(
                 bayes["home_win"], bayes["draw"], bayes["away_win"],
-                self.config.calibration_adjustments,
             )
-            bayes = adjusted_probs
 
-        # Step 4: Surprise Risk
+        # Step 4 — Surprise Risk
         surprise = self._compute_surprise_risk(
             bayes["home_win"], bayes["away_win"], bayes["draw"]
         )
 
-        # Step 5: Betting markets
-        btts = self._compute_btts(
-            dc_result.score_probabilities
-            if dc_result.score_probabilities
-            else {}
-        )
-        over_25, under_25, over_35 = self._compute_goal_markets(
-            dc_result.score_probabilities
-            if dc_result.score_probabilities
-            else {}
-        )
-        home_cs, away_cs = self._compute_clean_sheets(
-            dc_result.score_probabilities
-            if dc_result.score_probabilities
-            else {}
-        )
+        # Step 5 — Betting markets
+        score_probs = dc_result.get("score_probs", {})
+        btts = self._compute_btts(score_probs)
+        over_25, under_25, over_35 = self._compute_goal_markets(score_probs)
+        home_cs, away_cs = self._compute_clean_sheets(score_probs)
 
-        # Step 6: Top 10 ordered scores
-        top_10 = self._top_n_scores(
-            dc_result.score_probabilities
-            if dc_result.score_probabilities
-            else {}
-        )
+        # Step 6 — Top 10 scores
+        top_10 = self._top_n_scores(score_probs)
 
         return MatchPredictionResult(
-            match_id=dc_result.match_id,
-            home_team=dc_result.home_team,
-            away_team=dc_result.away_team,
+            match_id=home_team.id,
+            home_team=home_team.name,
+            away_team=away_team.name,
             home_win_prob=round(bayes["home_win"], 4),
             draw_prob=round(bayes["draw"], 4),
             away_win_prob=round(bayes["away_win"], 4),
-            home_expected_goals=dc_result.home_expected_goals,
-            away_expected_goals=dc_result.away_expected_goals,
+            home_expected_goals=round(dc_result["lambda_home"], 4),
+            away_expected_goals=round(dc_result["lambda_away"], 4),
             most_likely_score=top_10[0][0] if top_10 else "",
-            score_probabilities=dc_result.score_probabilities,
+            score_probabilities=score_probs,
             top_10_scores=top_10,
             confidence_index=round(confidence, 2),
             confidence_level=confidence_level,
@@ -141,106 +136,109 @@ class MatchPredictionEngine:
         away_team: TeamEntity,
         home_advantage: bool = True,
     ) -> MatchPredictionResult:
-        home_strength = home_team.igf_score / 50.0
-        away_strength = away_team.igf_score / 50.0
+        """Pure Poisson prediction (no DC, no Bayesian)."""
+        home_s = self._compute_team_strength(home_team)
+        away_s = self._compute_team_strength(away_team)
+        raw = self._compute_poisson_matrix(home_s, away_s, home_advantage)
+        return MatchPredictionResult(
+            match_id=home_team.id,
+            home_team=home_team.name,
+            away_team=away_team.name,
+            home_win_prob=round(raw["home_win"], 4),
+            draw_prob=round(raw["draw"], 4),
+            away_win_prob=round(raw["away_win"], 4),
+            home_expected_goals=round(raw["lambda_home"], 4),
+            away_expected_goals=round(raw["lambda_away"], 4),
+            most_likely_score=raw["most_likely"],
+            score_probabilities=raw["score_probs"],
+            top_10_scores=self._top_n_scores(raw["score_probs"]),
+        )
+
+    # ------------------------------------------------------------------
+    # TEAM STRENGTH COMPUTATION (FASE 2 & 4)
+    # ------------------------------------------------------------------
+
+    def compute_team_strength(self, team: TeamEntity) -> TeamStrength:
+        """Public entry — compute strength for a single team."""
+        return self._compute_team_strength(team)
+
+    def _compute_team_strength(self, team: TeamEntity) -> TeamStrength:
+        """
+        Build attack, defense, and overall strength from Elo, xG, FIFA rank.
+
+        Components are normalized so that 1.0 = tournament average.
+        """
+        # --- Elo contribution (scaled so that 1500 → 1.0, 2000 → ~2.0) ---
+        elo_norm = team.elo_score / 1500.0
+
+        # --- xG contributions ---
+        if team.xg_for is not None and team.xg_for > 0:
+            attack_xg = team.xg_for / 1.5  # ~1.5 avg xG_for per match
+            attack_xg = max(0.3, min(3.0, attack_xg))
+        else:
+            attack_xg = 1.0
+
+        if team.xg_against is not None and team.xg_against > 0:
+            defense_xg = 1.5 / team.xg_against
+            defense_xg = max(0.3, min(3.0, defense_xg))
+        else:
+            defense_xg = 1.0
+
+        # --- FIFA rank contribution ---
+        rank = team.fifa_rank or 100
+        fifa_norm = max(0.3, min(3.0, 100.0 / rank))
+
+        # --- Composite overall (used by Monte Carlo) ---
+        w = self.config
+        overall = (
+            w.elo_weight * elo_norm
+            + w.xg_attack_weight * attack_xg
+            + w.xg_defense_weight * defense_xg
+            + w.fifa_weight * fifa_norm
+        )
+        total_w = w.elo_weight + w.xg_attack_weight + w.xg_defense_weight + w.fifa_weight
+        if total_w > 0:
+            overall /= total_w
+
+        return TeamStrength(
+            attack_strength=attack_xg,
+            defense_strength=defense_xg,
+            overall_strength=overall,
+        )
+
+    # ------------------------------------------------------------------
+    # POISSON (FASE 6 — attack/defence based)
+    # ------------------------------------------------------------------
+
+    def _compute_poisson_matrix(
+        self,
+        home_s: TeamStrength,
+        away_s: TeamStrength,
+        home_advantage: bool = True,
+    ) -> dict:
+        """
+        λ_home = μ * attack_home * defense_away * home_factor
+        λ_away = μ * attack_away * defense_home
+        """
+        mu = self.config.league_avg_goals
         ha = self.config.home_advantage if home_advantage else 0.0
 
-        lambda_home = max(0.1, exp(home_strength - away_strength + ha))
-        lambda_away = max(0.1, exp(away_strength - home_strength))
+        lambda_home = mu * home_s.attack_strength * away_s.defense_strength * (1.0 + ha)
+        lambda_away = mu * away_s.attack_strength * home_s.defense_strength
 
-        probs = self._compute_poisson_matrix(lambda_home, lambda_away)
-        home_win = probs["home_win"]
-        draw = probs["draw"]
-        away_win = probs["away_win"]
+        lambda_home = max(0.1, lambda_home)
+        lambda_away = max(0.1, lambda_away)
 
-        expected_home = sum(i * p for i, p in enumerate(probs["home_goal_dist"]))
-        expected_away = sum(j * p for j, p in enumerate(probs["away_goal_dist"]))
-
-        likely_score = self._most_likely_score(probs["matrix"])
-        top_10 = self._top_n_scores(probs["score_probs"])
-
-        return MatchPredictionResult(
-            match_id=home_team.id,
-            home_team=home_team.name,
-            away_team=away_team.name,
-            home_win_prob=round(home_win, 4),
-            draw_prob=round(draw, 4),
-            away_win_prob=round(away_win, 4),
-            home_expected_goals=round(expected_home, 4),
-            away_expected_goals=round(expected_away, 4),
-            most_likely_score=likely_score,
-            score_probabilities=probs["score_probs"],
-            top_10_scores=top_10,
-        )
-
-    def predict_dixon_coles(
-        self,
-        home_team: TeamEntity,
-        away_team: TeamEntity,
-        home_advantage: bool = True,
-    ) -> MatchPredictionResult:
-        base = self.predict_poisson(home_team, away_team, home_advantage)
-        rho = self.config.dixon_coles_tau
-
-        adjusted = self._apply_dixon_coles(
-            base.score_probabilities or {},
-            rho,
-        )
-        top_10 = self._top_n_scores(adjusted["score_probs"])
-
-        return MatchPredictionResult(
-            match_id=base.match_id,
-            home_team=base.home_team,
-            away_team=base.away_team,
-            home_win_prob=round(adjusted["home_win"], 4),
-            draw_prob=round(adjusted["draw"], 4),
-            away_win_prob=round(adjusted["away_win"], 4),
-            home_expected_goals=base.home_expected_goals,
-            away_expected_goals=base.away_expected_goals,
-            most_likely_score=adjusted["most_likely"],
-            score_probabilities=adjusted["score_probs"],
-            top_10_scores=top_10,
-        )
-
-    def predict_elo(
-        self,
-        home_team: TeamEntity,
-        away_team: TeamEntity,
-        home_advantage: bool = True,
-    ) -> MatchPredictionResult:
-        ha = 100 if home_advantage else 0
-        expected_home = 1.0 / (1.0 + 10.0 ** ((away_team.elo_score - home_team.elo_score + ha) / 400.0))
-        expected_away = 1.0 - expected_home
-        draw_prob = 0.25 * (1 - abs(expected_home - expected_away))
-        home_win = expected_home - draw_prob / 2
-        away_win = expected_away - draw_prob / 2
-
-        return MatchPredictionResult(
-            match_id=home_team.id,
-            home_team=home_team.name,
-            away_team=away_team.name,
-            home_win_prob=round(max(0.0, home_win), 4),
-            draw_prob=round(max(0.0, draw_prob), 4),
-            away_win_prob=round(max(0.0, away_win), 4),
-            home_expected_goals=round(expected_home * 3, 4),
-            away_expected_goals=round(expected_away * 3, 4),
-            most_likely_score="",
-            score_probabilities=None,
-        )
-
-    def _compute_poisson_matrix(self, lambda_home: float, lambda_away: float) -> dict:
         max_g = self.config.max_goals
-        home_goal_dist = np.array(
+        home_dist = np.array(
             [self._poisson_pmf(i, lambda_home) for i in range(max_g + 1)]
         )
-        away_goal_dist = np.array(
+        away_dist = np.array(
             [self._poisson_pmf(j, lambda_away) for j in range(max_g + 1)]
         )
 
-        matrix = np.outer(home_goal_dist, away_goal_dist)
+        matrix = np.outer(home_dist, away_dist)
 
-        # triu_indices: row < col  => home < away => away win
-        # tril_indices: row > col  => home > away => home win
         away_win = np.sum(matrix[np.triu_indices(max_g + 1, k=1)])
         draw = np.sum(np.diag(matrix))
         home_win = np.sum(matrix[np.tril_indices(max_g + 1, k=-1)])
@@ -254,17 +252,40 @@ class MatchPredictionEngine:
         score_probs = {}
         for i in range(max_g + 1):
             for j in range(max_g + 1):
-                score_probs[f"{i}-{j}"] = float(matrix[i, j] / total if total > 0 else 0)
+                score_probs[f"{i}-{j}"] = float(matrix[i, j] / total) if total > 0 else 0.0
+
+        most_likely = self._most_likely_score(matrix)
 
         return {
             "home_win": home_win,
             "draw": draw,
             "away_win": away_win,
-            "home_goal_dist": home_goal_dist.tolist(),
-            "away_goal_dist": away_goal_dist.tolist(),
+            "home_goal_dist": home_dist.tolist(),
+            "away_goal_dist": away_dist.tolist(),
             "matrix": matrix,
             "score_probs": score_probs,
+            "most_likely": most_likely,
+            "lambda_home": lambda_home,
+            "lambda_away": lambda_away,
         }
+
+    def _predict_dixon_coles(
+        self,
+        home_s: TeamStrength,
+        away_s: TeamStrength,
+        home_advantage: bool = True,
+    ) -> dict:
+        """Poisson + Dixon-Coles correction."""
+        raw = self._compute_poisson_matrix(home_s, away_s, home_advantage)
+        rho = self.config.dixon_coles_tau
+        adjusted = self._apply_dixon_coles(raw["score_probs"], rho)
+        adjusted["lambda_home"] = raw["lambda_home"]
+        adjusted["lambda_away"] = raw["lambda_away"]
+        return adjusted
+
+    # ------------------------------------------------------------------
+    # STATIC HELPERS
+    # ------------------------------------------------------------------
 
     @staticmethod
     def _poisson_pmf(k: int, lam: float) -> float:
@@ -276,7 +297,9 @@ class MatchPredictionEngine:
         return f"{idx[0]}-{idx[1]}"
 
     @staticmethod
-    def _top_n_scores(score_probs: dict[str, float], n: int = 10) -> list[tuple[str, float]]:
+    def _top_n_scores(
+        score_probs: dict[str, float], n: int = 10
+    ) -> list[tuple[str, float]]:
         sorted_scores = sorted(score_probs.items(), key=lambda x: x[1], reverse=True)
         return [(s, round(p, 6)) for s, p in sorted_scores[:n]]
 
@@ -306,7 +329,6 @@ class MatchPredictionEngine:
         home_win = sum(v for k, v in adjusted.items() if int(k.split("-")[0]) > int(k.split("-")[1]))
         draw = sum(v for k, v in adjusted.items() if int(k.split("-")[0]) == int(k.split("-")[1]))
         away_win = sum(v for k, v in adjusted.items() if int(k.split("-")[0]) < int(k.split("-")[1]))
-
         most_likely = max(adjusted, key=adjusted.get)
 
         return {
@@ -317,13 +339,22 @@ class MatchPredictionEngine:
             "score_probs": adjusted,
         }
 
-    @staticmethod
+    # ------------------------------------------------------------------
+    # BAYESIAN UPDATE (FASE 5 — reduced prior)
+    # ------------------------------------------------------------------
+
     def _bayesian_update(
-        home_win: float, draw: float, away_win: float,
-        elo_home: int, elo_away: int,
-        prior_strength: float = 2.0,
+        self,
+        home_win: float,
+        draw: float,
+        away_win: float,
+        elo_home: int,
+        elo_away: int,
     ) -> dict:
-        """Bayesian update using Elo difference as prior."""
+        """
+        Bayesian update using Elo difference as prior.
+        Prior strength reduced from 2.0 → 0.5 to mitigate Elo double-counting.
+        """
         elo_diff = elo_home - elo_away
         elo_expected_home = 1.0 / (1.0 + 10.0 ** (-elo_diff / 400.0))
 
@@ -336,10 +367,11 @@ class MatchPredictionEngine:
             prior_home /= total_prior
             prior_draw /= total_prior
 
-        total = prior_strength + 1.0
-        updated_home = (prior_strength * prior_home + home_win) / total
-        updated_draw = (prior_strength * prior_draw + draw) / total
-        updated_away = (prior_strength * prior_away + away_win) / total
+        ps = self.config.bayesian_prior_strength  # 0.5
+        total = ps + 1.0
+        updated_home = (ps * prior_home + home_win) / total
+        updated_draw = (ps * prior_draw + draw) / total
+        updated_away = (ps * prior_away + away_win) / total
 
         total_p = updated_home + updated_draw + updated_away
         return {
@@ -348,16 +380,28 @@ class MatchPredictionEngine:
             "away_win": updated_away / total_p,
         }
 
+    # ------------------------------------------------------------------
+    # CONFIDENCE & DERIVED METRICS
+    # ------------------------------------------------------------------
+
     @staticmethod
-    def _compute_confidence(elo_home: int, elo_away: int, igf_home: float, igf_away: float) -> float:
-        """Confidence Index 0-100 based on rating differential and variance."""
-        elo_diff = abs(elo_home - elo_away)
-        igf_diff = abs(igf_home - igf_away)
+    def _compute_confidence(
+        home_team: TeamEntity,
+        away_team: TeamEntity,
+        home_s: TeamStrength,
+        away_s: TeamStrength,
+    ) -> float:
+        """Confidence Index 0-100 using multiple signal sources."""
+        elo_diff = abs(home_team.elo_score - away_team.elo_score)
+        elo_conf = min(100, elo_diff / 8.0)
 
-        elo_confidence = min(100, elo_diff / 8)
-        igf_confidence = min(100, igf_diff * 1.0)
+        xg_diff = abs(
+            (home_s.attack_strength - away_s.defense_strength)
+            - (away_s.attack_strength - home_s.defense_strength)
+        )
+        xg_conf = min(100, xg_diff * 30.0)
 
-        return 0.5 * elo_confidence + 0.5 * igf_confidence
+        return 0.6 * elo_conf + 0.4 * xg_conf
 
     @staticmethod
     def _classify_confidence(score: float) -> str:
@@ -373,46 +417,38 @@ class MatchPredictionEngine:
 
     @staticmethod
     def _apply_calibration_adjustments(
-        home_win: float, draw: float, away_win: float,
+        home_win: float,
+        draw: float,
+        away_win: float,
         adjustments: dict | None = None,
     ) -> dict:
         adj = adjustments or {}
         hw, dw, aw = home_win, draw, away_win
-
-        # Home advantage correction: reduce home when overpredicted
         ha_adj = adj.get("home_advantage_adjustment", 0.0)
         if ha_adj != 0.0:
-            hw *= (1.0 + ha_adj)  # negative adj reduces home win
+            hw *= 1.0 + ha_adj
             hw = max(0.0, hw)
-
-        # Draw correction: increase draw when underpredicted
         dr_adj = adj.get("draw_adjustment", 0.0)
         if dr_adj != 0.0:
-            dw *= (1.0 + dr_adj)
+            dw *= 1.0 + dr_adj
             dw = max(0.0, dw)
-
-        # Renormalize
         total = hw + dw + aw
         if total > 0:
             hw /= total
             dw /= total
             aw /= total
-
         return {"home_win": hw, "draw": dw, "away_win": aw}
 
     @staticmethod
     def _compute_surprise_risk(home_win: float, away_win: float, draw: float) -> float:
-        """Probability that the non-favorite gets points."""
         if home_win >= away_win and home_win >= draw:
             return draw + away_win
-        elif away_win >= home_win and away_win >= draw:
+        if away_win >= home_win and away_win >= draw:
             return draw + home_win
-        else:
-            return min(home_win, away_win) + draw
+        return min(home_win, away_win) + draw
 
     @staticmethod
     def _compute_btts(score_probs: dict[str, float]) -> float:
-        """Both Teams To Score probability."""
         btts = 0.0
         for score, prob in score_probs.items():
             i, j = map(int, score.split("-"))
@@ -421,8 +457,9 @@ class MatchPredictionEngine:
         return btts
 
     @staticmethod
-    def _compute_goal_markets(score_probs: dict[str, float]) -> tuple[float, float, float]:
-        """Over 2.5, Under 2.5, Over 3.5 probabilities."""
+    def _compute_goal_markets(
+        score_probs: dict[str, float],
+    ) -> tuple[float, float, float]:
         over_25 = 0.0
         over_35 = 0.0
         for score, prob in score_probs.items():
@@ -436,8 +473,9 @@ class MatchPredictionEngine:
         return over_25, under_25, over_35
 
     @staticmethod
-    def _compute_clean_sheets(score_probs: dict[str, float]) -> tuple[float, float]:
-        """Home clean sheet, Away clean sheet probabilities."""
+    def _compute_clean_sheets(
+        score_probs: dict[str, float],
+    ) -> tuple[float, float]:
         home_cs = 0.0
         away_cs = 0.0
         for score, prob in score_probs.items():

@@ -5,8 +5,10 @@ from app.domain.entities import (
     MatchStage,
     MatchStatus,
     PlayerEntity,
+    PredictionConfig,
     SimulationConfig,
     TeamEntity,
+    TeamStrength,
     TournamentResult,
 )
 
@@ -17,7 +19,9 @@ __all__ = [
     "MatchStage",
     "MatchStatus",
     "PlayerEntity",
+    "PredictionConfig",
     "SimulationConfig",
     "TeamEntity",
+    "TeamStrength",
     "TournamentResult",
 ]

@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.core.cache_decorator import cached
 from app.core.dependencies import get_db
-from app.engine.match_prediction import MatchPredictionConfig, MatchPredictionEngine
+from app.domain.entities import PredictionConfig
+from app.engine.match_prediction import MatchPredictionEngine
 from app.models.elo_rating import EloRating
 from app.models.fifa_ranking import FifaRanking
 from app.models.group import Group

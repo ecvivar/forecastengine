@@ -27,7 +27,8 @@ from app.models import (  # noqa: F401
 from app.db.session import Base
 from app.core.dependencies import get_db, PaginationParams
 from app.main import app
-from app.engine.match_prediction import MatchPredictionConfig, MatchPredictionEngine
+from app.domain.entities import PredictionConfig
+from app.engine.match_prediction import MatchPredictionEngine
 from app.engine.monte_carlo import run_single_tournament_py, MonteCarloEngine
 from app.domain.entities import TeamEntity, SimulationConfig
 
@@ -266,7 +267,7 @@ def main():
     strengths = np.array([t.igf_score / 50.0 for t in teams_list], dtype=np.float64)
     assignments = np.array([ord(group_mapping[t.id]) - 65 for t in teams_list], dtype=np.int64)
 
-    mp_engine = MatchPredictionEngine(config=MatchPredictionConfig())
+    mp_engine = MatchPredictionEngine(config=PredictionConfig())
     home, away = teams_list[0], teams_list[1]
 
     def predict_match():
