@@ -373,6 +373,9 @@ class MatchPredictionEngine:
         At elo=0.20, ps = 0.25 (weaker Elo pull).
         """
         elo_diff = elo_home - elo_away
+        if self.config.elo_compression_scale > 0:
+            scale = self.config.elo_compression_scale
+            elo_diff = np.tanh(elo_diff / scale) * scale
         elo_expected_home = 1.0 / (1.0 + 10.0 ** (-elo_diff / 400.0))
 
         prior_home = elo_expected_home

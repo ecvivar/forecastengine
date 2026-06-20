@@ -169,6 +169,7 @@ class PredictionConfig:
     top_n_scores: int = 10
     calibration_adjustments: dict | None = None
     ensemble_weights: dict | None = None
+    elo_compression_scale: int = 0
 
 
 @dataclass
