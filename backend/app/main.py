@@ -130,6 +130,7 @@ app.include_router(comparison.router, prefix=settings.api_prefix)
 app.include_router(competitions.router, prefix=settings.api_prefix)
 app.include_router(export.router, prefix=settings.api_prefix)
 app.include_router(scenarios.router, prefix=settings.api_prefix)
+app.include_router(explain.router, prefix=settings.api_prefix)
 
 
 @app.get("/", include_in_schema=False)

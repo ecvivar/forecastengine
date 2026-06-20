@@ -1,0 +1,606 @@
+{
+  "correlations": {
+    "Elo Score": {
+      "pearson_r": 0.8542,
+      "pearson_p": 0.0,
+      "spearman_rho": 0.9892,
+      "spearman_p": 0.0
+    },
+    "xG For": {
+      "pearson_r": 0.9286,
+      "pearson_p": 0.0,
+      "spearman_rho": 0.9814,
+      "spearman_p": 0.0
+    },
+    "xG Against": {
+      "pearson_r": -0.8684,
+      "pearson_p": 0.0,
+      "spearman_rho": -0.9756,
+      "spearman_p": 0.0
+    },
+    "FIFA Rank": {
+      "pearson_r": -0.8412,
+      "pearson_p": 0.0,
+      "spearman_rho": -0.9892,
+      "spearman_p": 0.0
+    },
+    "Overall Strength": {
+      "pearson_r": 0.8858,
+      "pearson_p": 0.0,
+      "spearman_rho": 0.9903,
+      "spearman_p": 0.0
+    }
+  },
+  "team_data": {
+    "Brazil": {
+      "elo": 1942,
+      "fifa_rank": 1,
+      "xg_for": 2.3,
+      "xg_against": 0.85
+    },
+    "Argentina": {
+      "elo": 1915,
+      "fifa_rank": 2,
+      "xg_for": 2.1,
+      "xg_against": 0.9
+    },
+    "France": {
+      "elo": 1900,
+      "fifa_rank": 3,
+      "xg_for": 2.2,
+      "xg_against": 0.8
+    },
+    "England": {
+      "elo": 1885,
+      "fifa_rank": 4,
+      "xg_for": 2.0,
+      "xg_against": 0.95
+    },
+    "Spain": {
+      "elo": 1870,
+      "fifa_rank": 5,
+      "xg_for": 2.05,
+      "xg_against": 0.88
+    },
+    "Germany": {
+      "elo": 1860,
+      "fifa_rank": 6,
+      "xg_for": 1.95,
+      "xg_against": 0.92
+    },
+    "Netherlands": {
+      "elo": 1850,
+      "fifa_rank": 7,
+      "xg_for": 1.9,
+      "xg_against": 0.9
+    },
+    "Portugal": {
+      "elo": 1840,
+      "fifa_rank": 8,
+      "xg_for": 1.85,
+      "xg_against": 0.95
+    },
+    "Italy": {
+      "elo": 1830,
+      "fifa_rank": 9,
+      "xg_for": 1.8,
+      "xg_against": 1.0
+    },
+    "Belgium": {
+      "elo": 1820,
+      "fifa_rank": 10,
+      "xg_for": 1.85,
+      "xg_against": 1.05
+    },
+    "Croatia": {
+      "elo": 1810,
+      "fifa_rank": 11,
+      "xg_for": 1.7,
+      "xg_against": 1.0
+    },
+    "Uruguay": {
+      "elo": 1800,
+      "fifa_rank": 12,
+      "xg_for": 1.65,
+      "xg_against": 1.05
+    },
+    "Colombia": {
+      "elo": 1780,
+      "fifa_rank": 13,
+      "xg_for": 1.6,
+      "xg_against": 1.1
+    },
+    "Denmark": {
+      "elo": 1770,
+      "fifa_rank": 14,
+      "xg_for": 1.55,
+      "xg_against": 1.05
+    },
+    "Switzerland": {
+      "elo": 1760,
+      "fifa_rank": 15,
+      "xg_for": 1.5,
+      "xg_against": 1.1
+    },
+    "Mexico": {
+      "elo": 1750,
+      "fifa_rank": 16,
+      "xg_for": 1.55,
+      "xg_against": 1.15
+    },
+    "Japan": {
+      "elo": 1740,
+      "fifa_rank": 17,
+      "xg_for": 1.45,
+      "xg_against": 1.1
+    },
+    "Morocco": {
+      "elo": 1730,
+      "fifa_rank": 18,
+      "xg_for": 1.4,
+      "xg_against": 1.15
+    },
+    "Senegal": {
+      "elo": 1720,
+      "fifa_rank": 19,
+      "xg_for": 1.45,
+      "xg_against": 1.2
+    },
+    "USA": {
+      "elo": 1710,
+      "fifa_rank": 20,
+      "xg_for": 1.5,
+      "xg_against": 1.25
+    },
+    "Serbia": {
+      "elo": 1700,
+      "fifa_rank": 21,
+      "xg_for": 1.4,
+      "xg_against": 1.2
+    },
+    "Poland": {
+      "elo": 1690,
+      "fifa_rank": 22,
+      "xg_for": 1.45,
+      "xg_against": 1.25
+    },
+    "South Korea": {
+      "elo": 1680,
+      "fifa_rank": 23,
+      "xg_for": 1.35,
+      "xg_against": 1.2
+    },
+    "Nigeria": {
+      "elo": 1670,
+      "fifa_rank": 24,
+      "xg_for": 1.4,
+      "xg_against": 1.25
+    },
+    "Ecuador": {
+      "elo": 1660,
+      "fifa_rank": 25,
+      "xg_for": 1.35,
+      "xg_against": 1.25
+    },
+    "Iran": {
+      "elo": 1650,
+      "fifa_rank": 26,
+      "xg_for": 1.2,
+      "xg_against": 1.15
+    },
+    "Australia": {
+      "elo": 1640,
+      "fifa_rank": 27,
+      "xg_for": 1.25,
+      "xg_against": 1.3
+    },
+    "Canada": {
+      "elo": 1630,
+      "fifa_rank": 28,
+      "xg_for": 1.3,
+      "xg_against": 1.3
+    },
+    "Costa Rica": {
+      "elo": 1620,
+      "fifa_rank": 29,
+      "xg_for": 1.15,
+      "xg_against": 1.25
+    },
+    "Cameroon": {
+      "elo": 1610,
+      "fifa_rank": 30,
+      "xg_for": 1.25,
+      "xg_against": 1.35
+    },
+    "Ghana": {
+      "elo": 1600,
+      "fifa_rank": 31,
+      "xg_for": 1.3,
+      "xg_against": 1.35
+    },
+    "Saudi Arabia": {
+      "elo": 1580,
+      "fifa_rank": 32,
+      "xg_for": 1.1,
+      "xg_against": 1.3
+    },
+    "Tunisia": {
+      "elo": 1570,
+      "fifa_rank": 33,
+      "xg_for": 1.15,
+      "xg_against": 1.35
+    },
+    "Algeria": {
+      "elo": 1560,
+      "fifa_rank": 34,
+      "xg_for": 1.2,
+      "xg_against": 1.4
+    },
+    "Egypt": {
+      "elo": 1550,
+      "fifa_rank": 35,
+      "xg_for": 1.15,
+      "xg_against": 1.4
+    },
+    "Paraguay": {
+      "elo": 1540,
+      "fifa_rank": 36,
+      "xg_for": 1.1,
+      "xg_against": 1.35
+    },
+    "Panama": {
+      "elo": 1530,
+      "fifa_rank": 37,
+      "xg_for": 1.05,
+      "xg_against": 1.4
+    },
+    "Slovakia": {
+      "elo": 1520,
+      "fifa_rank": 38,
+      "xg_for": 1.1,
+      "xg_against": 1.45
+    },
+    "Hungary": {
+      "elo": 1510,
+      "fifa_rank": 39,
+      "xg_for": 1.15,
+      "xg_against": 1.45
+    },
+    "Greece": {
+      "elo": 1500,
+      "fifa_rank": 40,
+      "xg_for": 1.1,
+      "xg_against": 1.4
+    },
+    "Norway": {
+      "elo": 1490,
+      "fifa_rank": 41,
+      "xg_for": 1.2,
+      "xg_against": 1.5
+    },
+    "Scotland": {
+      "elo": 1480,
+      "fifa_rank": 42,
+      "xg_for": 1.05,
+      "xg_against": 1.45
+    },
+    "Venezuela": {
+      "elo": 1470,
+      "fifa_rank": 43,
+      "xg_for": 1.0,
+      "xg_against": 1.5
+    },
+    "China": {
+      "elo": 1460,
+      "fifa_rank": 44,
+      "xg_for": 0.95,
+      "xg_against": 1.5
+    },
+    "Iraq": {
+      "elo": 1450,
+      "fifa_rank": 45,
+      "xg_for": 0.9,
+      "xg_against": 1.55
+    },
+    "New Zealand": {
+      "elo": 1440,
+      "fifa_rank": 46,
+      "xg_for": 0.85,
+      "xg_against": 1.5
+    },
+    "Indonesia": {
+      "elo": 1430,
+      "fifa_rank": 47,
+      "xg_for": 0.8,
+      "xg_against": 1.6
+    },
+    "Kuwait": {
+      "elo": 1420,
+      "fifa_rank": 48,
+      "xg_for": 0.75,
+      "xg_against": 1.65
+    }
+  },
+  "prob_data": {
+    "Brazil": {
+      "champion_pct": 9.93,
+      "finalist_pct": 15.43,
+      "semi_pct": 24.28
+    },
+    "Argentina": {
+      "champion_pct": 6.63,
+      "finalist_pct": 11.13,
+      "semi_pct": 19.18
+    },
+    "France": {
+      "champion_pct": 9.82,
+      "finalist_pct": 15.24,
+      "semi_pct": 24.71
+    },
+    "England": {
+      "champion_pct": 5.48,
+      "finalist_pct": 9.58,
+      "semi_pct": 16.82
+    },
+    "Spain": {
+      "champion_pct": 6.95,
+      "finalist_pct": 11.77,
+      "semi_pct": 21.89
+    },
+    "Germany": {
+      "champion_pct": 5.85,
+      "finalist_pct": 10.34,
+      "semi_pct": 19.91
+    },
+    "Netherlands": {
+      "champion_pct": 5.68,
+      "finalist_pct": 10.07,
+      "semi_pct": 19.57
+    },
+    "Portugal": {
+      "champion_pct": 4.88,
+      "finalist_pct": 8.85,
+      "semi_pct": 17.89
+    },
+    "Italy": {
+      "champion_pct": 5.12,
+      "finalist_pct": 10.88,
+      "semi_pct": 18.9
+    },
+    "Belgium": {
+      "champion_pct": 4.96,
+      "finalist_pct": 10.4,
+      "semi_pct": 18.46
+    },
+    "Croatia": {
+      "champion_pct": 4.62,
+      "finalist_pct": 10.17,
+      "semi_pct": 18.27
+    },
+    "Uruguay": {
+      "champion_pct": 3.77,
+      "finalist_pct": 8.44,
+      "semi_pct": 15.94
+    },
+    "Colombia": {
+      "champion_pct": 1.8,
+      "finalist_pct": 3.74,
+      "semi_pct": 7.82
+    },
+    "Denmark": {
+      "champion_pct": 1.73,
+      "finalist_pct": 3.78,
+      "semi_pct": 7.72
+    },
+    "Switzerland": {
+      "champion_pct": 1.52,
+      "finalist_pct": 3.37,
+      "semi_pct": 7.29
+    },
+    "Mexico": {
+      "champion_pct": 1.51,
+      "finalist_pct": 3.27,
+      "semi_pct": 7.27
+    },
+    "Japan": {
+      "champion_pct": 1.53,
+      "finalist_pct": 3.57,
+      "semi_pct": 8.14
+    },
+    "Morocco": {
+      "champion_pct": 1.24,
+      "finalist_pct": 2.9,
+      "semi_pct": 7.25
+    },
+    "Senegal": {
+      "champion_pct": 1.36,
+      "finalist_pct": 3.01,
+      "semi_pct": 7.49
+    },
+    "USA": {
+      "champion_pct": 1.27,
+      "finalist_pct": 3.04,
+      "semi_pct": 7.61
+    },
+    "Serbia": {
+      "champion_pct": 1.49,
+      "finalist_pct": 3.96,
+      "semi_pct": 8.44
+    },
+    "Poland": {
+      "champion_pct": 1.52,
+      "finalist_pct": 3.95,
+      "semi_pct": 8.53
+    },
+    "South Korea": {
+      "champion_pct": 1.39,
+      "finalist_pct": 3.76,
+      "semi_pct": 8.25
+    },
+    "Nigeria": {
+      "champion_pct": 1.47,
+      "finalist_pct": 3.89,
+      "semi_pct": 8.67
+    },
+    "Ecuador": {
+      "champion_pct": 0.7,
+      "finalist_pct": 1.93,
+      "semi_pct": 4.52
+    },
+    "Iran": {
+      "champion_pct": 0.68,
+      "finalist_pct": 1.8,
+      "semi_pct": 4.37
+    },
+    "Australia": {
+      "champion_pct": 0.59,
+      "finalist_pct": 1.65,
+      "semi_pct": 3.94
+    },
+    "Canada": {
+      "champion_pct": 0.66,
+      "finalist_pct": 1.73,
+      "semi_pct": 4.21
+    },
+    "Costa Rica": {
+      "champion_pct": 0.55,
+      "finalist_pct": 1.62,
+      "semi_pct": 4.3
+    },
+    "Cameroon": {
+      "champion_pct": 0.62,
+      "finalist_pct": 1.57,
+      "semi_pct": 4.37
+    },
+    "Ghana": {
+      "champion_pct": 0.62,
+      "finalist_pct": 1.69,
+      "semi_pct": 4.74
+    },
+    "Saudi Arabia": {
+      "champion_pct": 0.53,
+      "finalist_pct": 1.39,
+      "semi_pct": 4.04
+    },
+    "Tunisia": {
+      "champion_pct": 0.57,
+      "finalist_pct": 1.8,
+      "semi_pct": 4.69
+    },
+    "Algeria": {
+      "champion_pct": 0.57,
+      "finalist_pct": 1.78,
+      "semi_pct": 4.5
+    },
+    "Egypt": {
+      "champion_pct": 0.46,
+      "finalist_pct": 1.6,
+      "semi_pct": 4.24
+    },
+    "Paraguay": {
+      "champion_pct": 0.47,
+      "finalist_pct": 1.58,
+      "semi_pct": 4.2
+    },
+    "Panama": {
+      "champion_pct": 0.19,
+      "finalist_pct": 0.56,
+      "semi_pct": 1.69
+    },
+    "Slovakia": {
+      "champion_pct": 0.19,
+      "finalist_pct": 0.57,
+      "semi_pct": 1.79
+    },
+    "Hungary": {
+      "champion_pct": 0.16,
+      "finalist_pct": 0.57,
+      "semi_pct": 1.77
+    },
+    "Greece": {
+      "champion_pct": 0.16,
+      "finalist_pct": 0.55,
+      "semi_pct": 1.69
+    },
+    "Norway": {
+      "champion_pct": 0.16,
+      "finalist_pct": 0.57,
+      "semi_pct": 1.92
+    },
+    "Scotland": {
+      "champion_pct": 0.14,
+      "finalist_pct": 0.48,
+      "semi_pct": 1.68
+    },
+    "Venezuela": {
+      "champion_pct": 0.13,
+      "finalist_pct": 0.42,
+      "semi_pct": 1.47
+    },
+    "China": {
+      "champion_pct": 0.08,
+      "finalist_pct": 0.37,
+      "semi_pct": 1.3
+    },
+    "Iraq": {
+      "champion_pct": 0.1,
+      "finalist_pct": 0.35,
+      "semi_pct": 1.24
+    },
+    "New Zealand": {
+      "champion_pct": 0.08,
+      "finalist_pct": 0.36,
+      "semi_pct": 1.13
+    },
+    "Indonesia": {
+      "champion_pct": 0.05,
+      "finalist_pct": 0.27,
+      "semi_pct": 1.01
+    },
+    "Kuwait": {
+      "champion_pct": 0.04,
+      "finalist_pct": 0.25,
+      "semi_pct": 0.89
+    }
+  },
+  "rankings": {
+    "top10_elo": [
+      "Brazil",
+      "Argentina",
+      "France",
+      "England",
+      "Spain",
+      "Germany",
+      "Netherlands",
+      "Portugal",
+      "Italy",
+      "Belgium"
+    ],
+    "top10_xg": [
+      "Brazil",
+      "France",
+      "Argentina",
+      "Spain",
+      "England",
+      "Germany",
+      "Netherlands",
+      "Portugal",
+      "Belgium",
+      "Italy"
+    ],
+    "top10_champ": [
+      "Brazil",
+      "France",
+      "Spain",
+      "Argentina",
+      "Germany",
+      "Netherlands",
+      "England",
+      "Italy",
+      "Belgium",
+      "Portugal"
+    ],
+    "overlap_elo_champ": 10,
+    "overlap_xg_champ": 10
+  }
+}

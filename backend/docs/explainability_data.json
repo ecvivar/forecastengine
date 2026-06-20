@@ -1,0 +1,809 @@
+{
+  "match_explanation": {
+    "prediction": {
+      "home_win": 0.478,
+      "draw": 0.187,
+      "away_win": 0.335,
+      "home_expected_goals": 3.45,
+      "away_expected_goals": 3.2813,
+      "most_likely_score": "3-3",
+      "confidence_index": 6.12,
+      "confidence_level": "Muy Baja"
+    },
+    "drivers": {
+      "xg_attack": 0.3606,
+      "elo": 0.2854,
+      "home_advantage": 0.2516,
+      "xg_defense": 0.0977,
+      "dixon_coles": 0.0047,
+      "fifa": 0.0
+    }
+  },
+  "tournament_summary": {
+    "teams": [
+      {
+        "team": "Qatar",
+        "overall_strength": 0.7519,
+        "drivers": {
+          "elo": 53.2,
+          "xg": 29.1,
+          "xg_attack": 12.0,
+          "xg_defense": 17.1,
+          "fifa": 17.7,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.0,
+          "attack_xg": 0.3,
+          "defense_xg": 0.6429,
+          "fifa_norm": 1.3333
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Ecuador",
+        "overall_strength": 1.22,
+        "drivers": {
+          "elo": 37.2,
+          "xg": 46.4,
+          "xg_attack": 21.9,
+          "xg_defense": 24.6,
+          "fifa": 16.4,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1333,
+          "attack_xg": 0.8889,
+          "defense_xg": 1.5,
+          "fifa_norm": 2.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Senegal",
+        "overall_strength": 1.0748,
+        "drivers": {
+          "elo": 42.2,
+          "xg": 39.2,
+          "xg_attack": 23.3,
+          "xg_defense": 16.0,
+          "fifa": 18.6,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1333,
+          "attack_xg": 0.8333,
+          "defense_xg": 0.8571,
+          "fifa_norm": 2.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Netherlands",
+        "overall_strength": 1.595,
+        "drivers": {
+          "elo": 32.6,
+          "xg": 48.6,
+          "xg_attack": 25.1,
+          "xg_defense": 23.5,
+          "fifa": 18.8,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.3,
+          "attack_xg": 1.3333,
+          "defense_xg": 1.875,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "England",
+        "overall_strength": 1.715,
+        "drivers": {
+          "elo": 30.3,
+          "xg": 52.2,
+          "xg_attack": 30.3,
+          "xg_defense": 21.9,
+          "fifa": 17.5,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.3,
+          "attack_xg": 1.7333,
+          "defense_xg": 1.875,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Iran",
+        "overall_strength": 0.9832,
+        "drivers": {
+          "elo": 43.4,
+          "xg": 40.2,
+          "xg_attack": 27.1,
+          "xg_defense": 13.1,
+          "fifa": 16.4,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.0667,
+          "attack_xg": 0.8889,
+          "defense_xg": 0.6429,
+          "fifa_norm": 1.6129
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "USA",
+        "overall_strength": 1.1033,
+        "drivers": {
+          "elo": 41.1,
+          "xg": 40.8,
+          "xg_attack": 13.6,
+          "xg_defense": 27.2,
+          "fifa": 18.1,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1333,
+          "attack_xg": 0.5,
+          "defense_xg": 1.5,
+          "fifa_norm": 2.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Wales",
+        "overall_strength": 0.8933,
+        "drivers": {
+          "elo": 50.7,
+          "xg": 26.9,
+          "xg_attack": 10.1,
+          "xg_defense": 16.8,
+          "fifa": 22.4,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1333,
+          "attack_xg": 0.3,
+          "defense_xg": 0.75,
+          "fifa_norm": 2.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Argentina",
+        "overall_strength": 1.5111,
+        "drivers": {
+          "elo": 34.4,
+          "xg": 45.7,
+          "xg_attack": 28.4,
+          "xg_defense": 17.4,
+          "fifa": 19.9,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.3,
+          "attack_xg": 1.4286,
+          "defense_xg": 1.3125,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Saudi Arabia",
+        "overall_strength": 0.9133,
+        "drivers": {
+          "elo": 43.8,
+          "xg": 41.6,
+          "xg_attack": 21.9,
+          "xg_defense": 19.7,
+          "fifa": 14.6,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.0,
+          "attack_xg": 0.6667,
+          "defense_xg": 0.9,
+          "fifa_norm": 1.3333
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Mexico",
+        "overall_strength": 1.1326,
+        "drivers": {
+          "elo": 41.2,
+          "xg": 38.3,
+          "xg_attack": 11.8,
+          "xg_defense": 26.5,
+          "fifa": 20.5,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1667,
+          "attack_xg": 0.4445,
+          "defense_xg": 1.5,
+          "fifa_norm": 2.3256
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Poland",
+        "overall_strength": 1.0892,
+        "drivers": {
+          "elo": 42.8,
+          "xg": 35.8,
+          "xg_attack": 13.8,
+          "xg_defense": 22.0,
+          "fifa": 21.4,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1667,
+          "attack_xg": 0.5,
+          "defense_xg": 1.2,
+          "fifa_norm": 2.3256
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Denmark",
+        "overall_strength": 1.0892,
+        "drivers": {
+          "elo": 42.8,
+          "xg": 35.8,
+          "xg_attack": 8.3,
+          "xg_defense": 27.5,
+          "fifa": 21.4,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1667,
+          "attack_xg": 0.3,
+          "defense_xg": 1.5,
+          "fifa_norm": 2.3256
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Tunisia",
+        "overall_strength": 1.3086,
+        "drivers": {
+          "elo": 33.6,
+          "xg": 52.7,
+          "xg_attack": 6.9,
+          "xg_defense": 45.9,
+          "fifa": 13.6,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1,
+          "attack_xg": 0.3,
+          "defense_xg": 3.0,
+          "fifa_norm": 1.7857
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "France",
+        "overall_strength": 1.5796,
+        "drivers": {
+          "elo": 35.5,
+          "xg": 45.6,
+          "xg_attack": 28.9,
+          "xg_defense": 16.6,
+          "fifa": 19.0,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.4,
+          "attack_xg": 1.5238,
+          "defense_xg": 1.3125,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Australia",
+        "overall_strength": 1.0186,
+        "drivers": {
+          "elo": 43.2,
+          "xg": 39.3,
+          "xg_attack": 19.6,
+          "xg_defense": 19.6,
+          "fifa": 17.5,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1,
+          "attack_xg": 0.6667,
+          "defense_xg": 1.0,
+          "fifa_norm": 1.7857
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Germany",
+        "overall_strength": 1.4,
+        "drivers": {
+          "elo": 37.1,
+          "xg": 41.4,
+          "xg_attack": 28.6,
+          "xg_defense": 12.9,
+          "fifa": 21.4,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.3,
+          "attack_xg": 1.3333,
+          "defense_xg": 0.9,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Japan",
+        "overall_strength": 1.138,
+        "drivers": {
+          "elo": 37.5,
+          "xg": 48.3,
+          "xg_attack": 22.0,
+          "xg_defense": 26.4,
+          "fifa": 14.2,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.0667,
+          "attack_xg": 0.8333,
+          "defense_xg": 1.5,
+          "fifa_norm": 1.6129
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Spain",
+        "overall_strength": 1.67,
+        "drivers": {
+          "elo": 31.1,
+          "xg": 50.9,
+          "xg_attack": 26.9,
+          "xg_defense": 24.0,
+          "fifa": 18.0,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.3,
+          "attack_xg": 1.5,
+          "defense_xg": 2.0,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Costa Rica",
+        "overall_strength": 0.8422,
+        "drivers": {
+          "elo": 49.1,
+          "xg": 33.5,
+          "xg_attack": 23.7,
+          "xg_defense": 9.7,
+          "fifa": 17.5,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.0333,
+          "attack_xg": 0.6667,
+          "defense_xg": 0.4091,
+          "fifa_norm": 1.4706
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Morocco",
+        "overall_strength": 1.2447,
+        "drivers": {
+          "elo": 36.4,
+          "xg": 47.5,
+          "xg_attack": 13.8,
+          "xg_defense": 33.7,
+          "fifa": 16.1,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1333,
+          "attack_xg": 0.5714,
+          "defense_xg": 2.1,
+          "fifa_norm": 2.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Croatia",
+        "overall_strength": 1.3219,
+        "drivers": {
+          "elo": 37.3,
+          "xg": 40.0,
+          "xg_attack": 17.3,
+          "xg_defense": 22.7,
+          "fifa": 22.7,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.2333,
+          "attack_xg": 0.7619,
+          "defense_xg": 1.5,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Belgium",
+        "overall_strength": 1.3466,
+        "drivers": {
+          "elo": 37.6,
+          "xg": 40.1,
+          "xg_attack": 6.7,
+          "xg_defense": 33.4,
+          "fifa": 22.3,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.2667,
+          "attack_xg": 0.3,
+          "defense_xg": 2.2499,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Canada",
+        "overall_strength": 0.8805,
+        "drivers": {
+          "elo": 50.0,
+          "xg": 29.7,
+          "xg_attack": 15.1,
+          "xg_defense": 14.6,
+          "fifa": 20.3,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1,
+          "attack_xg": 0.4445,
+          "defense_xg": 0.6429,
+          "fifa_norm": 1.7857
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Brazil",
+        "overall_strength": 1.7067,
+        "drivers": {
+          "elo": 34.4,
+          "xg": 48.0,
+          "xg_attack": 18.8,
+          "xg_defense": 29.3,
+          "fifa": 17.6,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.4667,
+          "attack_xg": 1.0667,
+          "defense_xg": 2.5,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Serbia",
+        "overall_strength": 1.1451,
+        "drivers": {
+          "elo": 40.8,
+          "xg": 38.9,
+          "xg_attack": 29.1,
+          "xg_defense": 9.8,
+          "fifa": 20.3,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1667,
+          "attack_xg": 1.1111,
+          "defense_xg": 0.5625,
+          "fifa_norm": 2.3256
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Switzerland",
+        "overall_strength": 1.0826,
+        "drivers": {
+          "elo": 43.1,
+          "xg": 35.4,
+          "xg_attack": 23.1,
+          "xg_defense": 12.3,
+          "fifa": 21.5,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1667,
+          "attack_xg": 0.8333,
+          "defense_xg": 0.6667,
+          "fifa_norm": 2.3256
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Cameroon",
+        "overall_strength": 1.1102,
+        "drivers": {
+          "elo": 39.6,
+          "xg": 44.3,
+          "xg_attack": 24.0,
+          "xg_defense": 20.3,
+          "fifa": 16.1,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1,
+          "attack_xg": 0.8889,
+          "defense_xg": 1.125,
+          "fifa_norm": 1.7857
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Uruguay",
+        "overall_strength": 1.3767,
+        "drivers": {
+          "elo": 35.8,
+          "xg": 42.4,
+          "xg_attack": 9.7,
+          "xg_defense": 32.7,
+          "fifa": 21.8,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.2333,
+          "attack_xg": 0.4445,
+          "defense_xg": 2.2499,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "South Korea",
+        "overall_strength": 1.0186,
+        "drivers": {
+          "elo": 43.2,
+          "xg": 39.3,
+          "xg_attack": 24.5,
+          "xg_defense": 14.7,
+          "fifa": 17.5,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1,
+          "attack_xg": 0.8333,
+          "defense_xg": 0.75,
+          "fifa_norm": 1.7857
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Portugal",
+        "overall_strength": 1.5367,
+        "drivers": {
+          "elo": 33.0,
+          "xg": 47.5,
+          "xg_attack": 31.2,
+          "xg_defense": 16.3,
+          "fifa": 19.5,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.2667,
+          "attack_xg": 1.6,
+          "defense_xg": 1.25,
+          "fifa_norm": 3.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      },
+      {
+        "team": "Ghana",
+        "overall_strength": 1.1152,
+        "drivers": {
+          "elo": 40.6,
+          "xg": 41.4,
+          "xg_attack": 29.9,
+          "xg_defense": 11.5,
+          "fifa": 17.9,
+          "other": 0.0
+        },
+        "raw_components": {
+          "elo_norm": 1.1333,
+          "attack_xg": 1.1111,
+          "defense_xg": 0.6429,
+          "fifa_norm": 2.0
+        },
+        "weights": {
+          "elo": 0.4,
+          "xg_attack": 0.3,
+          "xg_defense": 0.2,
+          "fifa": 0.1
+        }
+      }
+    ],
+    "average_drivers": {
+      "elo": 39.8,
+      "xg": 41.5,
+      "fifa": 18.7,
+      "other": 0.0
+    },
+    "sum_check": 100.0,
+    "config": {
+      "elo_weight": 0.4,
+      "xg_attack_weight": 0.3,
+      "xg_defense_weight": 0.2,
+      "fifa_weight": 0.1,
+      "home_advantage": 0.08,
+      "bayesian_prior_strength": 0.5
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "Before": {
+    "brier": 0.610862,
+    "log_loss": 1.018512,
+    "rps": 0.220329,
+    "ece": 0.061117
+  },
+  "PlattScaling": {
+    "brier": 0.610862,
+    "log_loss": 1.018505,
+    "rps": 0.220329,
+    "ece": 0.061119,
+    "params": {
+      "a": 1.3214,
+      "b": -0.1118
+    }
+  },
+  "IsotonicRegression": {
+    "brier": 0.610862,
+    "log_loss": 1.018505,
+    "rps": 0.220329,
+    "ece": 0.061119
+  },
+  "TemperatureScaling": {
+    "brier": 0.610802,
+    "log_loss": 1.018427,
+    "rps": 0.220291,
+    "ece": 0.051567,
+    "params": {
+      "T": 1.0318
+    }
+  }
+}

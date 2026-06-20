@@ -1,0 +1,83 @@
+{
+  "n_matches": 100,
+  "max_sum_error": 0.0,
+  "mean_sum_error": 0.0,
+  "pass_pct": 100.0,
+  "avg_drivers": {
+    "elo": 31.14,
+    "xg_attack": 27.5,
+    "xg_defense": 25.32,
+    "fifa": 4.11,
+    "home_advantage": 9.37,
+    "dixon_coles": 2.57
+  },
+  "driver_sum": 100.01,
+  "fifa_nonzero_pct": 100.0,
+  "sample_matches": [
+    {
+      "match": "Canada vs Morocco",
+      "home_win_prob": 0.4923,
+      "driver_sum": 1.0,
+      "drivers": {
+        "elo": 12.35,
+        "xg_attack": 26.29,
+        "xg_defense": 44.17,
+        "fifa": 5.85,
+        "home_advantage": 7.36,
+        "dixon_coles": 3.99
+      }
+    },
+    {
+      "match": "Honduras vs Switzerland",
+      "home_win_prob": 0.2593,
+      "driver_sum": 1.0,
+      "drivers": {
+        "elo": 4.6,
+        "xg_attack": 64.39,
+        "xg_defense": 14.34,
+        "fifa": 6.73,
+        "home_advantage": 5.91,
+        "dixon_coles": 4.02
+      }
+    },
+    {
+      "match": "Spain vs Netherlands",
+      "home_win_prob": 0.6165,
+      "driver_sum": 1.0,
+      "drivers": {
+        "elo": 9.83,
+        "xg_attack": 3.54,
+        "xg_defense": 73.09,
+        "fifa": 1.66,
+        "home_advantage": 11.1,
+        "dixon_coles": 0.79
+      }
+    },
+    {
+      "match": "Portugal vs Spain",
+      "home_win_prob": 0.395,
+      "driver_sum": 1.0,
+      "drivers": {
+        "elo": 48.24,
+        "xg_attack": 8.53,
+        "xg_defense": 12.16,
+        "fifa": 6.76,
+        "home_advantage": 20.2,
+        "dixon_coles": 4.12
+      }
+    },
+    {
+      "match": "Brazil vs Netherlands",
+      "home_win_prob": 0.5729,
+      "driver_sum": 1.0,
+      "drivers": {
+        "elo": 14.18,
+        "xg_attack": 19.34,
+        "xg_defense": 53.11,
+        "fifa": 1.99,
+        "home_advantage": 10.71,
+        "dixon_coles": 0.68
+      }
+    }
+  ]
+}

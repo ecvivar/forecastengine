@@ -1,0 +1,682 @@
+{
+  "sim_sizes": [
+    100,
+    500,
+    1000,
+    5000,
+    10000,
+    50000
+  ],
+  "timings": {
+    "100": 3.74,
+    "500": 0.25,
+    "1000": 0.51,
+    "5000": 2.51,
+    "10000": 5.21,
+    "50000": 25.61
+  },
+  "convergence": {
+    "100": {
+      "top10": [
+        {
+          "team": "Brazil",
+          "champion_pct": 15.0,
+          "finalist_pct": 19.0,
+          "semi_pct": 25.0
+        },
+        {
+          "team": "France",
+          "champion_pct": 9.0,
+          "finalist_pct": 14.0,
+          "semi_pct": 26.0
+        },
+        {
+          "team": "Germany",
+          "champion_pct": 9.0,
+          "finalist_pct": 13.0,
+          "semi_pct": 24.0
+        },
+        {
+          "team": "Spain",
+          "champion_pct": 8.0,
+          "finalist_pct": 15.0,
+          "semi_pct": 23.0
+        },
+        {
+          "team": "Italy",
+          "champion_pct": 7.0,
+          "finalist_pct": 16.0,
+          "semi_pct": 19.0
+        },
+        {
+          "team": "Croatia",
+          "champion_pct": 7.0,
+          "finalist_pct": 10.0,
+          "semi_pct": 20.0
+        },
+        {
+          "team": "England",
+          "champion_pct": 5.0,
+          "finalist_pct": 10.0,
+          "semi_pct": 23.0
+        },
+        {
+          "team": "Argentina",
+          "champion_pct": 4.0,
+          "finalist_pct": 6.0,
+          "semi_pct": 12.0
+        },
+        {
+          "team": "Belgium",
+          "champion_pct": 4.0,
+          "finalist_pct": 10.0,
+          "semi_pct": 19.0
+        },
+        {
+          "team": "Netherlands",
+          "champion_pct": 3.0,
+          "finalist_pct": 6.0,
+          "semi_pct": 10.0
+        }
+      ],
+      "max_delta_from_prev": 0,
+      "mean_delta_from_prev": 0,
+      "prev_n": null,
+      "elapsed_s": 3.74
+    },
+    "500": {
+      "top10": [
+        {
+          "team": "France",
+          "champion_pct": 10.4,
+          "finalist_pct": 15.4,
+          "semi_pct": 23.8
+        },
+        {
+          "team": "Brazil",
+          "champion_pct": 9.0,
+          "finalist_pct": 16.6,
+          "semi_pct": 27.8
+        },
+        {
+          "team": "Argentina",
+          "champion_pct": 6.6,
+          "finalist_pct": 11.0,
+          "semi_pct": 18.8
+        },
+        {
+          "team": "Belgium",
+          "champion_pct": 6.2,
+          "finalist_pct": 11.2,
+          "semi_pct": 18.6
+        },
+        {
+          "team": "England",
+          "champion_pct": 6.0,
+          "finalist_pct": 10.6,
+          "semi_pct": 18.6
+        },
+        {
+          "team": "Spain",
+          "champion_pct": 5.6,
+          "finalist_pct": 10.2,
+          "semi_pct": 18.6
+        },
+        {
+          "team": "Germany",
+          "champion_pct": 5.6,
+          "finalist_pct": 9.8,
+          "semi_pct": 19.2
+        },
+        {
+          "team": "Croatia",
+          "champion_pct": 5.4,
+          "finalist_pct": 10.8,
+          "semi_pct": 18.8
+        },
+        {
+          "team": "Netherlands",
+          "champion_pct": 5.0,
+          "finalist_pct": 12.6,
+          "semi_pct": 23.4
+        },
+        {
+          "team": "Uruguay",
+          "champion_pct": 5.0,
+          "finalist_pct": 10.2,
+          "semi_pct": 17.0
+        }
+      ],
+      "max_delta_from_prev": 6.0,
+      "mean_delta_from_prev": 2.76,
+      "prev_n": 100,
+      "elapsed_s": 0.25
+    },
+    "1000": {
+      "top10": [
+        {
+          "team": "France",
+          "champion_pct": 11.0,
+          "finalist_pct": 16.2,
+          "semi_pct": 25.3
+        },
+        {
+          "team": "Brazil",
+          "champion_pct": 9.2,
+          "finalist_pct": 16.2,
+          "semi_pct": 25.3
+        },
+        {
+          "team": "Spain",
+          "champion_pct": 7.8,
+          "finalist_pct": 11.7,
+          "semi_pct": 22.8
+        },
+        {
+          "team": "Argentina",
+          "champion_pct": 7.1,
+          "finalist_pct": 11.5,
+          "semi_pct": 19.6
+        },
+        {
+          "team": "Portugal",
+          "champion_pct": 6.1,
+          "finalist_pct": 9.6,
+          "semi_pct": 18.9
+        },
+        {
+          "team": "Netherlands",
+          "champion_pct": 6.0,
+          "finalist_pct": 9.7,
+          "semi_pct": 20.2
+        },
+        {
+          "team": "Italy",
+          "champion_pct": 5.4,
+          "finalist_pct": 11.4,
+          "semi_pct": 19.6
+        },
+        {
+          "team": "England",
+          "champion_pct": 5.2,
+          "finalist_pct": 9.7,
+          "semi_pct": 16.8
+        },
+        {
+          "team": "Belgium",
+          "champion_pct": 5.0,
+          "finalist_pct": 10.7,
+          "semi_pct": 19.1
+        },
+        {
+          "team": "Germany",
+          "champion_pct": 4.9,
+          "finalist_pct": 10.4,
+          "semi_pct": 19.6
+        }
+      ],
+      "max_delta_from_prev": 2.2,
+      "mean_delta_from_prev": 1.05,
+      "prev_n": 500,
+      "elapsed_s": 0.51
+    },
+    "5000": {
+      "top10": [
+        {
+          "team": "Brazil",
+          "champion_pct": 9.18,
+          "finalist_pct": 14.78,
+          "semi_pct": 24.34
+        },
+        {
+          "team": "France",
+          "champion_pct": 9.16,
+          "finalist_pct": 14.84,
+          "semi_pct": 24.28
+        },
+        {
+          "team": "Spain",
+          "champion_pct": 7.2,
+          "finalist_pct": 11.6,
+          "semi_pct": 22.14
+        },
+        {
+          "team": "Argentina",
+          "champion_pct": 6.42,
+          "finalist_pct": 11.22,
+          "semi_pct": 19.52
+        },
+        {
+          "team": "Netherlands",
+          "champion_pct": 6.24,
+          "finalist_pct": 10.34,
+          "semi_pct": 19.68
+        },
+        {
+          "team": "Italy",
+          "champion_pct": 5.76,
+          "finalist_pct": 10.64,
+          "semi_pct": 18.48
+        },
+        {
+          "team": "Germany",
+          "champion_pct": 5.64,
+          "finalist_pct": 10.06,
+          "semi_pct": 19.84
+        },
+        {
+          "team": "England",
+          "champion_pct": 5.56,
+          "finalist_pct": 10.28,
+          "semi_pct": 17.26
+        },
+        {
+          "team": "Belgium",
+          "champion_pct": 5.34,
+          "finalist_pct": 10.86,
+          "semi_pct": 18.78
+        },
+        {
+          "team": "Portugal",
+          "champion_pct": 5.32,
+          "finalist_pct": 9.66,
+          "semi_pct": 18.06
+        }
+      ],
+      "max_delta_from_prev": 1.84,
+      "mean_delta_from_prev": 0.596,
+      "prev_n": 1000,
+      "elapsed_s": 2.51
+    },
+    "10000": {
+      "top10": [
+        {
+          "team": "Brazil",
+          "champion_pct": 9.87,
+          "finalist_pct": 15.02,
+          "semi_pct": 24.4
+        },
+        {
+          "team": "France",
+          "champion_pct": 9.87,
+          "finalist_pct": 15.55,
+          "semi_pct": 25.16
+        },
+        {
+          "team": "Spain",
+          "champion_pct": 7.23,
+          "finalist_pct": 12.57,
+          "semi_pct": 22.78
+        },
+        {
+          "team": "Argentina",
+          "champion_pct": 6.8,
+          "finalist_pct": 11.23,
+          "semi_pct": 19.4
+        },
+        {
+          "team": "Germany",
+          "champion_pct": 6.13,
+          "finalist_pct": 10.04,
+          "semi_pct": 19.54
+        },
+        {
+          "team": "Netherlands",
+          "champion_pct": 5.83,
+          "finalist_pct": 10.38,
+          "semi_pct": 19.65
+        },
+        {
+          "team": "Italy",
+          "champion_pct": 5.14,
+          "finalist_pct": 11.0,
+          "semi_pct": 19.23
+        },
+        {
+          "team": "England",
+          "champion_pct": 5.05,
+          "finalist_pct": 8.45,
+          "semi_pct": 15.39
+        },
+        {
+          "team": "Croatia",
+          "champion_pct": 4.72,
+          "finalist_pct": 10.25,
+          "semi_pct": 18.51
+        },
+        {
+          "team": "Portugal",
+          "champion_pct": 4.64,
+          "finalist_pct": 8.55,
+          "semi_pct": 17.31
+        }
+      ],
+      "max_delta_from_prev": 0.71,
+      "mean_delta_from_prev": 0.454,
+      "prev_n": 5000,
+      "elapsed_s": 5.21
+    },
+    "50000": {
+      "top10": [
+        {
+          "team": "Brazil",
+          "champion_pct": 9.81,
+          "finalist_pct": 15.21,
+          "semi_pct": 24.44
+        },
+        {
+          "team": "France",
+          "champion_pct": 9.67,
+          "finalist_pct": 15.06,
+          "semi_pct": 24.44
+        },
+        {
+          "team": "Spain",
+          "champion_pct": 7.16,
+          "finalist_pct": 12.06,
+          "semi_pct": 22.64
+        },
+        {
+          "team": "Argentina",
+          "champion_pct": 6.77,
+          "finalist_pct": 11.31,
+          "semi_pct": 19.07
+        },
+        {
+          "team": "Germany",
+          "champion_pct": 5.83,
+          "finalist_pct": 10.03,
+          "semi_pct": 19.31
+        },
+        {
+          "team": "Netherlands",
+          "champion_pct": 5.83,
+          "finalist_pct": 10.24,
+          "semi_pct": 19.81
+        },
+        {
+          "team": "England",
+          "champion_pct": 5.34,
+          "finalist_pct": 9.3,
+          "semi_pct": 16.67
+        },
+        {
+          "team": "Italy",
+          "champion_pct": 5.15,
+          "finalist_pct": 10.83,
+          "semi_pct": 18.97
+        },
+        {
+          "team": "Belgium",
+          "champion_pct": 4.85,
+          "finalist_pct": 10.46,
+          "semi_pct": 18.53
+        },
+        {
+          "team": "Portugal",
+          "champion_pct": 4.82,
+          "finalist_pct": 8.71,
+          "semi_pct": 17.49
+        }
+      ],
+      "max_delta_from_prev": 0.3,
+      "mean_delta_from_prev": 0.137,
+      "prev_n": 10000,
+      "elapsed_s": 25.61
+    }
+  },
+  "audits": {
+    "100": {
+      "n_simulations": 100,
+      "checks": {
+        "champion_pct": {
+          "expected": 100.0,
+          "actual": 100.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "finalist_pct": {
+          "expected": 200.0,
+          "actual": 200.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "semi_pct": {
+          "expected": 400.0,
+          "actual": 400.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "quarter_pct": {
+          "expected": 800.0,
+          "actual": 800.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "round16_pct": {
+          "expected": 1600.0,
+          "actual": 1600.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "round32_pct": {
+          "expected": 3200.0,
+          "actual": 3200.0,
+          "deviation": 0.0,
+          "pass": true
+        }
+      },
+      "all_pass": true
+    },
+    "500": {
+      "n_simulations": 500,
+      "checks": {
+        "champion_pct": {
+          "expected": 100.0,
+          "actual": 100.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "finalist_pct": {
+          "expected": 200.0,
+          "actual": 200.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "semi_pct": {
+          "expected": 400.0,
+          "actual": 400.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "quarter_pct": {
+          "expected": 800.0,
+          "actual": 800.0,
+          "deviation": -0.0,
+          "pass": true
+        },
+        "round16_pct": {
+          "expected": 1600.0,
+          "actual": 1600.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "round32_pct": {
+          "expected": 3200.0,
+          "actual": 3200.0,
+          "deviation": 0.0,
+          "pass": true
+        }
+      },
+      "all_pass": true
+    },
+    "1000": {
+      "n_simulations": 1000,
+      "checks": {
+        "champion_pct": {
+          "expected": 100.0,
+          "actual": 100.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "finalist_pct": {
+          "expected": 200.0,
+          "actual": 200.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "semi_pct": {
+          "expected": 400.0,
+          "actual": 400.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "quarter_pct": {
+          "expected": 800.0,
+          "actual": 800.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "round16_pct": {
+          "expected": 1600.0,
+          "actual": 1600.0,
+          "deviation": -0.0,
+          "pass": true
+        },
+        "round32_pct": {
+          "expected": 3200.0,
+          "actual": 3200.0,
+          "deviation": -0.0,
+          "pass": true
+        }
+      },
+      "all_pass": true
+    },
+    "5000": {
+      "n_simulations": 5000,
+      "checks": {
+        "champion_pct": {
+          "expected": 100.0,
+          "actual": 100.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "finalist_pct": {
+          "expected": 200.0,
+          "actual": 200.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "semi_pct": {
+          "expected": 400.0,
+          "actual": 400.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "quarter_pct": {
+          "expected": 800.0,
+          "actual": 800.0,
+          "deviation": -0.0,
+          "pass": true
+        },
+        "round16_pct": {
+          "expected": 1600.0,
+          "actual": 1600.0,
+          "deviation": -0.0,
+          "pass": true
+        },
+        "round32_pct": {
+          "expected": 3200.0,
+          "actual": 3200.0,
+          "deviation": 0.0,
+          "pass": true
+        }
+      },
+      "all_pass": true
+    },
+    "10000": {
+      "n_simulations": 10000,
+      "checks": {
+        "champion_pct": {
+          "expected": 100.0,
+          "actual": 100.0,
+          "deviation": -0.0,
+          "pass": true
+        },
+        "finalist_pct": {
+          "expected": 200.0,
+          "actual": 200.0,
+          "deviation": -0.0,
+          "pass": true
+        },
+        "semi_pct": {
+          "expected": 400.0,
+          "actual": 400.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "quarter_pct": {
+          "expected": 800.0,
+          "actual": 800.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "round16_pct": {
+          "expected": 1600.0,
+          "actual": 1600.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "round32_pct": {
+          "expected": 3200.0,
+          "actual": 3200.0,
+          "deviation": 0.0,
+          "pass": true
+        }
+      },
+      "all_pass": true
+    },
+    "50000": {
+      "n_simulations": 50000,
+      "checks": {
+        "champion_pct": {
+          "expected": 100.0,
+          "actual": 99.99,
+          "deviation": -0.01,
+          "pass": true
+        },
+        "finalist_pct": {
+          "expected": 200.0,
+          "actual": 200.04,
+          "deviation": 0.04,
+          "pass": true
+        },
+        "semi_pct": {
+          "expected": 400.0,
+          "actual": 400.0,
+          "deviation": 0.0,
+          "pass": true
+        },
+        "quarter_pct": {
+          "expected": 800.0,
+          "actual": 800.03,
+          "deviation": 0.03,
+          "pass": true
+        },
+        "round16_pct": {
+          "expected": 1600.0,
+          "actual": 1599.98,
+          "deviation": -0.02,
+          "pass": true
+        },
+        "round32_pct": {
+          "expected": 3200.0,
+          "actual": 3200.01,
+          "deviation": 0.01,
+          "pass": true
+        }
+      },
+      "all_pass": true
+    }
+  }
+}

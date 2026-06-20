@@ -164,16 +164,17 @@ class MatchPredictionEngine:
 
     def _compute_team_strength(self, team: TeamEntity) -> TeamStrength:
         """
-        Build attack, defense, and overall strength from Elo, xG, FIFA rank.
+        Sprint 5 dual rating: attack_rating and defense_rating evolve independently.
 
-        Components are normalized so that 1.0 = tournament average.
+        attack_rating = composite of xG for, Elo, FIFA (weighted)
+        defense_rating = composite of xG against, Elo, FIFA (weighted)
+        overall_rating = weighted composite of all 4 signals
+        uncertainty = from team.rating_deviation (Dynamic Elo)
         """
-        # --- Elo contribution (scaled so that 1500 → 1.0, 2000 → ~2.0) ---
         elo_norm = team.elo_score / 1500.0
 
-        # --- xG contributions ---
         if team.xg_for is not None and team.xg_for > 0:
-            attack_xg = team.xg_for / 1.5  # ~1.5 avg xG_for per match
+            attack_xg = team.xg_for / 1.5
             attack_xg = max(0.3, min(3.0, attack_xg))
         else:
             attack_xg = 1.0
@@ -184,26 +185,37 @@ class MatchPredictionEngine:
         else:
             defense_xg = 1.0
 
-        # --- FIFA rank contribution ---
         rank = team.fifa_rank or 100
-        fifa_norm = max(0.3, min(3.0, 100.0 / rank))
+        fifa_norm = max(0.7, min(1.3, 100.0 / rank))
 
-        # --- Composite overall (used by Monte Carlo) ---
         w = self.config
-        overall = (
-            w.elo_weight * elo_norm
-            + w.xg_attack_weight * attack_xg
-            + w.xg_defense_weight * defense_xg
-            + w.fifa_weight * fifa_norm
-        )
-        total_w = w.elo_weight + w.xg_attack_weight + w.xg_defense_weight + w.fifa_weight
-        if total_w > 0:
-            overall /= total_w
+        mut = w.elo_weight + w.xg_attack_weight + w.xg_defense_weight + w.fifa_weight
+        mut = max(mut, 0.001)
+        overall_rating = (w.elo_weight * elo_norm + w.xg_attack_weight * attack_xg
+                          + w.xg_defense_weight * defense_xg + w.fifa_weight * fifa_norm) / mut
+
+        atk_w = w.xg_attack_weight + w.fifa_weight
+        if atk_w > 0:
+            attack_rating = (w.xg_attack_weight * attack_xg + w.fifa_weight * fifa_norm) / atk_w
+        else:
+            attack_rating = attack_xg
+
+        def_w = w.xg_defense_weight + w.fifa_weight
+        if def_w > 0:
+            defense_rating = (w.xg_defense_weight * defense_xg + w.fifa_weight * fifa_norm) / def_w
+        else:
+            defense_rating = defense_xg
+
+        uncertainty = team.rating_deviation / 100.0
 
         return TeamStrength(
-            attack_strength=attack_xg,
-            defense_strength=defense_xg,
-            overall_strength=overall,
+            attack_strength=attack_rating,
+            defense_strength=defense_rating,
+            overall_strength=overall_rating,
+            attack_rating=attack_rating,
+            defense_rating=defense_rating,
+            overall_rating=overall_rating,
+            uncertainty=uncertainty,
         )
 
     # ------------------------------------------------------------------
@@ -353,7 +365,12 @@ class MatchPredictionEngine:
     ) -> dict:
         """
         Bayesian update using Elo difference as prior.
-        Prior strength reduced from 2.0 → 0.5 to mitigate Elo double-counting.
+
+        Sprint 4A: elo_weight now scales the prior strength so that
+        elo_weight directly affects predict_full().
+        At default elo=0.40, ps = bayesian_prior_strength (0.5).
+        At elo=0.60, ps = 0.75 (stronger Elo pull).
+        At elo=0.20, ps = 0.25 (weaker Elo pull).
         """
         elo_diff = elo_home - elo_away
         elo_expected_home = 1.0 / (1.0 + 10.0 ** (-elo_diff / 400.0))
@@ -367,7 +384,9 @@ class MatchPredictionEngine:
             prior_home /= total_prior
             prior_draw /= total_prior
 
-        ps = self.config.bayesian_prior_strength  # 0.5
+        base_ps = self.config.bayesian_prior_strength
+        elo_scale = self.config.elo_weight / 0.40
+        ps = base_ps * elo_scale
         total = ps + 1.0
         updated_home = (ps * prior_home + home_win) / total
         updated_draw = (ps * prior_draw + draw) / total

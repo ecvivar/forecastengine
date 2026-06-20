@@ -1,0 +1,44 @@
+[
+  {
+    "tournament": "2014",
+    "predicted_champion": "Brazil",
+    "real_champion": "Germany",
+    "champion_probability": 17.0,
+    "top4_accuracy": 0.25,
+    "finalist_accuracy": 0.0,
+    "avg_brier": 0.694509,
+    "avg_log_loss": 1.139826,
+    "avg_rps": 0.263155,
+    "ece": 0.126303,
+    "match_count": 64,
+    "n_simulations": 500
+  },
+  {
+    "tournament": "2018",
+    "predicted_champion": "Argentina",
+    "real_champion": "France",
+    "champion_probability": 13.6,
+    "top4_accuracy": 0.25,
+    "finalist_accuracy": 0.0,
+    "avg_brier": 0.632202,
+    "avg_log_loss": 1.037847,
+    "avg_rps": 0.228262,
+    "ece": 0.099739,
+    "match_count": 64,
+    "n_simulations": 500
+  },
+  {
+    "tournament": "2022",
+    "predicted_champion": "France",
+    "real_champion": "France",
+    "champion_probability": 14.8,
+    "top4_accuracy": 0.5,
+    "finalist_accuracy": 0.5,
+    "avg_brier": 0.653714,
+    "avg_log_loss": 1.09782,
+    "avg_rps": 0.234914,
+    "ece": 0.117666,
+    "match_count": 64,
+    "n_simulations": 500
+  }
+]

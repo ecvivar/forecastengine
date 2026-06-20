@@ -4,6 +4,15 @@ Domain Entities for WorldCup Forecast Engine 2026.
 Pure domain objects following DDD — no ORM dependencies.
 """
 
+"""
+Domain Entities for WorldCup Forecast Engine 2026.
+
+Sprint 5 additions:
+  - TeamStrength: attack_rating, defense_rating, overall_rating, uncertainty
+  - TeamEntity: rating_deviation, volatility (for Dynamic Elo)
+  - TournamentUncertainty: CI for champion/finalist/semi
+  - ScenarioConfig: injury/red_card/suspension/form modifications
+"""
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from enum import Enum
@@ -47,6 +56,8 @@ class TeamEntity:
     igf_score: float = 0.0
     xg_for: float | None = None
     xg_against: float | None = None
+    rating_deviation: float = 35.0
+    volatility: float = 0.06
 
 
 @dataclass
@@ -99,6 +110,7 @@ class MatchPredictionResult:
     under_25_prob: float = 0.0
     home_clean_sheet: float = 0.0
     away_clean_sheet: float = 0.0
+    ci_90: dict | None = None
 
 
 @dataclass
@@ -137,6 +149,10 @@ class TeamStrength:
     attack_strength: float = 1.0
     defense_strength: float = 1.0
     overall_strength: float = 1.0
+    attack_rating: float = 1.0
+    defense_rating: float = 1.0
+    overall_rating: float = 1.0
+    uncertainty: float = 0.0
 
 
 @dataclass
@@ -152,6 +168,7 @@ class PredictionConfig:
     league_avg_goals: float = 1.25
     top_n_scores: int = 10
     calibration_adjustments: dict | None = None
+    ensemble_weights: dict | None = None
 
 
 @dataclass
@@ -184,7 +201,26 @@ class TournamentResult:
 
 
 @dataclass
+class TournamentUncertainty:
+    team_id: uuid.UUID
+    team_name: str
+    win_probability: float
+    variance: float
+    std_dev: float
+    ci_90: tuple[float, float]
+
+
+@dataclass
 class BracketNode:
     round_name: str
     matches: list[tuple[int | None, int | None]] = field(default_factory=list)
     winners: list[int | None] = field(default_factory=list)
+
+
+@dataclass
+class ScenarioConfig:
+    injury: list[str] | None = None
+    red_card: list[str] | None = None
+    suspension: list[str] | None = None
+    form_drop: dict[str, float] | None = None
+    form_boost: dict[str, float] | None = None

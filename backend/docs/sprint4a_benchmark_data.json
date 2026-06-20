@@ -1,0 +1,31 @@
+{
+  "Sprint3": {
+    "accuracy": 0.484375,
+    "brier": 0.629154,
+    "log_loss": 1.04408,
+    "rps": 0.227561,
+    "ece": 0.041517,
+    "matches": 192
+  },
+  "Sprint4A": {
+    "accuracy": 0.484375,
+    "brier": 0.610862,
+    "log_loss": 1.018512,
+    "rps": 0.220329,
+    "ece": 0.061117,
+    "matches": 192
+  },
+  "success_criteria": {
+    "accuracy_improved_or_maintained": true,
+    "brier_improved": true,
+    "ece_improved": false,
+    "all_pass": false
+  },
+  "deltas": {
+    "accuracy": 0.0,
+    "brier": -0.018292,
+    "log_loss": -0.025568,
+    "rps": -0.007232,
+    "ece": 0.0196
+  }
+}

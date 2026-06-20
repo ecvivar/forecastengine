@@ -1,0 +1,138 @@
+{
+  "ensemble": {
+    "accuracy": 0.526042,
+    "brier": 0.597749,
+    "log_loss": 1.002626,
+    "rps": 0.214704,
+    "ece": 0.060137
+  },
+  "calibrated": {
+    "brier": 0.591526,
+    "log_loss": 0.996637,
+    "rps": 0.210988,
+    "ece": 0.085298,
+    "temperature": 0.7516
+  },
+  "sharpness": {
+    "avg_entropy": 1.0393,
+    "entropy_std": 0.0312,
+    "min_entropy": 0.9092,
+    "max_entropy": 1.087,
+    "avg_max_prob": 0.475,
+    "max_prob_std": 0.0547,
+    "avg_concentration_top2": 0.7867,
+    "pct_above_50pct": 29.7,
+    "pct_above_60pct": 1.6
+  },
+  "ensemble_weights": {
+    "poisson_xg": 0.05338617671404919,
+    "bayesian_elo": 0.36906321416740784,
+    "dixon_coles": 0.15405203594097808,
+    "strength_diff": 0.423498573177565
+  },
+  "best_log_loss": 0.980531,
+  "individual_contributions": {
+    "poisson_xg": {
+      "weight": 0.25,
+      "home_win": 0.4202,
+      "draw": 0.2136,
+      "away_win": 0.3662,
+      "contribution_pct": 25.0
+    },
+    "bayesian_elo": {
+      "weight": 0.25,
+      "home_win": 0.4585,
+      "draw": 0.2458,
+      "away_win": 0.2957,
+      "contribution_pct": 25.0
+    },
+    "dixon_coles": {
+      "weight": 0.25,
+      "home_win": 0.4741,
+      "draw": 0.219,
+      "away_win": 0.3069,
+      "contribution_pct": 25.0
+    },
+    "strength_diff": {
+      "weight": 0.25,
+      "home_win": 0.5027,
+      "draw": 0.2487,
+      "away_win": 0.4973,
+      "contribution_pct": 25.0
+    }
+  },
+  "bootstrap_ci": {
+    "home_win": {
+      "point": 0.4320467180154504,
+      "ci_lower": 0.429,
+      "ci_upper": 0.4349
+    },
+    "draw": {
+      "point": 0.21819578387997166,
+      "ci_lower": 0.2161,
+      "ci_upper": 0.2202
+    },
+    "away_win": {
+      "point": 0.34975749810457796,
+      "ci_lower": 0.3449,
+      "ci_upper": 0.3549
+    }
+  },
+  "scenario": {
+    "baseline_hw": 0.4741,
+    "injury_hw": 0.4645
+  },
+  "stress_test": {
+    "baseline_home_win": 0.4741,
+    "mean": 0.4553,
+    "std": 0.0901,
+    "min": 0.2035,
+    "max": 0.644,
+    "p5": 0.2952,
+    "p95": 0.5793,
+    "sensitivity": 19.01,
+    "n_scenarios": 500
+  },
+  "dynamic_elo": {
+    "bra_rating": 1850.5,
+    "bra_rd": 31.7,
+    "arg_rating": 1779.5,
+    "arg_rd": 31.7
+  },
+  "tournament_uncertainty": {
+    "variance": 0.0149,
+    "std_dev": 0.12,
+    "ci_90": [
+      18.0,
+      18.4
+    ]
+  },
+  "explainability_match": {
+    "prediction": {
+      "home_win": 0.4741,
+      "draw": 0.219,
+      "away_win": 0.3069,
+      "home_expected_goals": 1.9496,
+      "away_expected_goals": 1.8136,
+      "most_likely_score": "2-1",
+      "confidence_index": 3.97,
+      "confidence_level": "Muy Baja"
+    },
+    "drivers": {
+      "elo": 55.4,
+      "xg_attack": 0.8,
+      "xg_defense": 9.0,
+      "fifa": 7.3,
+      "home_advantage": 23.5,
+      "dixon_coles": 4.0,
+      "sum": 100.0
+    }
+  },
+  "explainability_tournament_avg": {
+    "elo": 44.4,
+    "xg": 42.9,
+    "fifa": 12.6,
+    "variance": 2.1,
+    "sum": 99.9
+  }
+}

@@ -1,0 +1,81 @@
+[
+  {
+    "scenario": "Equal FIFA (both rank 50)",
+    "home_win_prob": 0.4427,
+    "draw_prob": 0.2326,
+    "away_win_prob": 0.3247,
+    "fifa_driver_pct": 13.26,
+    "fifa_driver_delta_pp": 0.81,
+    "home_fifa_rank": 50,
+    "away_fifa_rank": 50,
+    "home_elo": 1500,
+    "away_elo": 1500,
+    "home_xg_for": 1.5,
+    "away_xg_for": 1.5
+  },
+  {
+    "scenario": "Big FIFA gap (10 vs 150)",
+    "home_win_prob": 0.5142,
+    "draw_prob": 0.2474,
+    "away_win_prob": 0.2385,
+    "fifa_driver_pct": 4.15,
+    "fifa_driver_delta_pp": 1.13,
+    "home_fifa_rank": 10,
+    "away_fifa_rank": 150,
+    "home_elo": 1600,
+    "away_elo": 1400,
+    "home_xg_for": 1.8,
+    "away_xg_for": 1.2
+  },
+  {
+    "scenario": "Same Elo/xG, FIFA gap only (5 vs 100)",
+    "home_win_prob": 0.4337,
+    "draw_prob": 0.2392,
+    "away_win_prob": 0.3271,
+    "fifa_driver_pct": 1.55,
+    "fifa_driver_delta_pp": 0.09,
+    "home_fifa_rank": 5,
+    "away_fifa_rank": 100,
+    "home_elo": 1500,
+    "away_elo": 1500,
+    "home_xg_for": 1.5,
+    "away_xg_for": 1.5
+  },
+  {
+    "scenario": "Strong team good FIFA vs weak team bad FIFA",
+    "home_win_prob": 0.531,
+    "draw_prob": 0.2347,
+    "away_win_prob": 0.2343,
+    "fifa_driver_pct": 2.87,
+    "fifa_driver_delta_pp": 1.04,
+    "home_fifa_rank": 5,
+    "away_fifa_rank": 150,
+    "home_elo": 1800,
+    "away_elo": 1300,
+    "home_xg_for": 2.0,
+    "away_xg_for": 1.0
+  },
+  {
+    "scenario": "FIFA offsetting weak xG",
+    "home_win_prob": 0.4213,
+    "draw_prob": 0.2416,
+    "away_win_prob": 0.3371,
+    "fifa_driver_pct": 2.08,
+    "fifa_driver_delta_pp": 0.57,
+    "home_fifa_rank": 2,
+    "away_fifa_rank": 200,
+    "home_elo": 1500,
+    "away_elo": 1500,
+    "home_xg_for": 1.0,
+    "away_xg_for": 2.0
+  },
+  {
+    "min_pct": 0.81,
+    "max_pct": 18.16,
+    "mean_pct": 4.15,
+    "median_pct": 3.44,
+    "p25_pct": 2.44,
+    "p75_pct": 4.85,
+    "count": 192
+  }
+]

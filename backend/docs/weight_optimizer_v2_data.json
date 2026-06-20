@@ -1,0 +1,250 @@
+{
+  "current_weights": {
+    "elo": 0.4,
+    "xg_attack": 0.3,
+    "xg_defense": 0.2,
+    "fifa": 0.1
+  },
+  "current_metrics": {
+    "brier": 0.63217,
+    "log_loss": 1.050394,
+    "count": 192
+  },
+  "best_weights": {
+    "elo": 0.4,
+    "xg_attack": 0.3,
+    "xg_defense": 0.1,
+    "fifa": 0.2
+  },
+  "best_metrics": {
+    "brier": 0.591348,
+    "log_loss": 0.993271
+  },
+  "improvement": {
+    "brier_delta": 0.040822,
+    "log_loss_delta": 0.057123
+  },
+  "n_candidates": 151,
+  "top20": [
+    {
+      "weights": {
+        "elo": 0.4,
+        "xg_attack": 0.3,
+        "xg_defense": 0.1,
+        "fifa": 0.2
+      },
+      "brier": 0.591348,
+      "log_loss": 0.993271,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.45,
+        "xg_attack": 0.25,
+        "xg_defense": 0.1,
+        "fifa": 0.2
+      },
+      "brier": 0.591407,
+      "log_loss": 0.993534,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.35,
+        "xg_attack": 0.35,
+        "xg_defense": 0.1,
+        "fifa": 0.2
+      },
+      "brier": 0.592103,
+      "log_loss": 0.994161,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.5,
+        "xg_attack": 0.2,
+        "xg_defense": 0.1,
+        "fifa": 0.2
+      },
+      "brier": 0.592396,
+      "log_loss": 0.995131,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.45,
+        "xg_attack": 0.3,
+        "xg_defense": 0.1,
+        "fifa": 0.15
+      },
+      "brier": 0.593056,
+      "log_loss": 0.995734,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.5,
+        "xg_attack": 0.25,
+        "xg_defense": 0.1,
+        "fifa": 0.15
+      },
+      "brier": 0.592988,
+      "log_loss": 0.995874,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.3,
+        "xg_attack": 0.4,
+        "xg_defense": 0.1,
+        "fifa": 0.2
+      },
+      "brier": 0.593652,
+      "log_loss": 0.996188,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.4,
+        "xg_attack": 0.35,
+        "xg_defense": 0.1,
+        "fifa": 0.15
+      },
+      "brier": 0.59395,
+      "log_loss": 0.99679,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.55,
+        "xg_attack": 0.2,
+        "xg_defense": 0.1,
+        "fifa": 0.15
+      },
+      "brier": 0.593859,
+      "log_loss": 0.997369,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.55,
+        "xg_attack": 0.15,
+        "xg_defense": 0.1,
+        "fifa": 0.2
+      },
+      "brier": 0.594517,
+      "log_loss": 0.99835,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.35,
+        "xg_attack": 0.4,
+        "xg_defense": 0.1,
+        "fifa": 0.15
+      },
+      "brier": 0.595615,
+      "log_loss": 0.998947,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.6,
+        "xg_attack": 0.15,
+        "xg_defense": 0.1,
+        "fifa": 0.15
+      },
+      "brier": 0.595966,
+      "log_loss": 1.000617,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.55,
+        "xg_attack": 0.25,
+        "xg_defense": 0.1,
+        "fifa": 0.1
+      },
+      "brier": 0.59723,
+      "log_loss": 1.002243,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.5,
+        "xg_attack": 0.3,
+        "xg_defense": 0.1,
+        "fifa": 0.1
+      },
+      "brier": 0.597775,
+      "log_loss": 1.002715,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.6,
+        "xg_attack": 0.2,
+        "xg_defense": 0.1,
+        "fifa": 0.1
+      },
+      "brier": 0.597654,
+      "log_loss": 1.003159,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.6,
+        "xg_attack": 0.1,
+        "xg_defense": 0.1,
+        "fifa": 0.2
+      },
+      "brier": 0.598155,
+      "log_loss": 1.003696,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.45,
+        "xg_attack": 0.35,
+        "xg_defense": 0.1,
+        "fifa": 0.1
+      },
+      "brier": 0.599135,
+      "log_loss": 1.004363,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.4,
+        "xg_attack": 0.4,
+        "xg_defense": 0.1,
+        "fifa": 0.1
+      },
+      "brier": 0.601244,
+      "log_loss": 1.007093,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.6,
+        "xg_attack": 0.25,
+        "xg_defense": 0.1,
+        "fifa": 0.05
+      },
+      "brier": 0.606637,
+      "log_loss": 1.016433,
+      "count": 192
+    },
+    {
+      "weights": {
+        "elo": 0.55,
+        "xg_attack": 0.3,
+        "xg_defense": 0.1,
+        "fifa": 0.05
+      },
+      "brier": 0.608341,
+      "log_loss": 1.018443,
+      "count": 192
+    }
+  ]
+}
