@@ -1,0 +1,86 @@
+{
+  "Sprint 7 (elo=0.40)": {
+    "label": "Sprint 7 (elo=0.40)",
+    "elo_weight": 0.4,
+    "accuracy": 0.4844,
+    "brier": 0.6109,
+    "logloss": 1.0185,
+    "rps": 0.2203,
+    "ece": 0.0611,
+    "sharpness": 1.0135,
+    "pearson": 0.9147,
+    "ci_coverage": 0.0,
+    "stress_std_avg": 0.0088,
+    "stress_std_max": 0.04,
+    "top5_champions": [
+      [
+        "Brazil",
+        10.47
+      ],
+      [
+        "France",
+        9.6
+      ],
+      [
+        "Spain",
+        7.33
+      ],
+      [
+        "Argentina",
+        6.55
+      ],
+      [
+        "Netherlands",
+        5.93
+      ]
+    ],
+    "timing": {
+      "match_predictions": 0.1,
+      "tournament_baseline": 6.9,
+      "ci_coverage": 15.9,
+      "stress_test": 37.7
+    }
+  },
+  "Sprint 7.5 (elo=0.32)": {
+    "label": "Sprint 7.5 (elo=0.32)",
+    "elo_weight": 0.32,
+    "accuracy": 0.4896,
+    "brier": 0.6187,
+    "logloss": 1.029,
+    "rps": 0.224,
+    "ece": 0.0229,
+    "sharpness": 1.0149,
+    "pearson": 0.9114,
+    "ci_coverage": 0.0,
+    "stress_std_avg": 0.0091,
+    "stress_std_max": 0.0462,
+    "top5_champions": [
+      [
+        "Brazil",
+        10.69
+      ],
+      [
+        "France",
+        10.58
+      ],
+      [
+        "Argentina",
+        7.21
+      ],
+      [
+        "Spain",
+        6.97
+      ],
+      [
+        "Netherlands",
+        6.0
+      ]
+    ],
+    "timing": {
+      "match_predictions": 0.1,
+      "tournament_baseline": 4.1,
+      "ci_coverage": 15.8,
+      "stress_test": 37.6
+    }
+  }
+}

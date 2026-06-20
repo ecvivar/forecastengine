@@ -1,0 +1,80 @@
+{
+  "Sprint 7  (elo=0.40)": {
+    "elo_weight": 0.4,
+    "accuracy": 0.4844,
+    "brier": 0.6109,
+    "ece": 0.0611,
+    "sharpness": 1.0135,
+    "pearson": 0.9178,
+    "stress_std_avg": 0.008743,
+    "stress_std_max": 0.036014,
+    "ci_coverage_stress": 1.0,
+    "ci_coverage_chunk": 1.0,
+    "top5": [
+      [
+        "France",
+        9.72
+      ],
+      [
+        "Brazil",
+        9.65
+      ],
+      [
+        "Spain",
+        7.0
+      ],
+      [
+        "Argentina",
+        6.53
+      ],
+      [
+        "Germany",
+        6.04
+      ]
+    ],
+    "timing": {
+      "match": 0.2,
+      "baseline": 7.7,
+      "stress": 209.7
+    }
+  },
+  "Sprint 7.5 (elo=0.32)": {
+    "elo_weight": 0.32,
+    "accuracy": 0.4896,
+    "brier": 0.6187,
+    "ece": 0.0229,
+    "sharpness": 1.0149,
+    "pearson": 0.9118,
+    "stress_std_avg": 0.008941,
+    "stress_std_max": 0.04166,
+    "ci_coverage_stress": 1.0,
+    "ci_coverage_chunk": 1.0,
+    "top5": [
+      [
+        "France",
+        10.68
+      ],
+      [
+        "Brazil",
+        10.12
+      ],
+      [
+        "Spain",
+        7.59
+      ],
+      [
+        "Argentina",
+        6.8
+      ],
+      [
+        "Germany",
+        5.91
+      ]
+    ],
+    "timing": {
+      "match": 0.2,
+      "baseline": 4.2,
+      "stress": 201.4
+    }
+  }
+}
