@@ -1,0 +1,116 @@
+[
+  {
+    "timestamp": "2026-06-21T20:43:06",
+    "schedule": "weekly",
+    "results": [
+      {
+        "phase": "week_1",
+        "n": 50,
+        "ece": 0.172685,
+        "brier": 0.223355,
+        "coverage": 0.0,
+        "accuracy": 0.62
+      },
+      {
+        "phase": "week_2",
+        "n": 50,
+        "ece": 0.132958,
+        "brier": 0.211366,
+        "coverage": 0.0,
+        "accuracy": 0.72
+      },
+      {
+        "phase": "week_3",
+        "n": 50,
+        "ece": 0.061891,
+        "brier": 0.23691,
+        "coverage": 0.0,
+        "accuracy": 0.58
+      },
+      {
+        "phase": "week_4",
+        "n": 50,
+        "ece": 0.133923,
+        "brier": 0.20345,
+        "coverage": 0.0,
+        "accuracy": 0.66
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-21T20:43:06",
+    "schedule": "by_phase",
+    "results": [
+      {
+        "phase": "phase_1",
+        "n": 66,
+        "ece": 0.153193,
+        "brier": 0.222887,
+        "coverage": 0.0,
+        "accuracy": 0.636364
+      },
+      {
+        "phase": "phase_2",
+        "n": 66,
+        "ece": 0.089167,
+        "brier": 0.212272,
+        "coverage": 0.0,
+        "accuracy": 0.712121
+      },
+      {
+        "phase": "phase_3",
+        "n": 66,
+        "ece": 0.131405,
+        "brier": 0.223991,
+        "coverage": 0.0,
+        "accuracy": 0.575758
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-21T20:43:06",
+    "schedule": "cumulative",
+    "results": [
+      {
+        "phase": "step_1",
+        "n": 40,
+        "ece": 0.192353,
+        "brier": 0.221097,
+        "coverage": 0.0,
+        "accuracy": 0.625
+      },
+      {
+        "phase": "step_2",
+        "n": 80,
+        "ece": 0.121707,
+        "brier": 0.213356,
+        "coverage": 0.0,
+        "accuracy": 0.675
+      },
+      {
+        "phase": "step_3",
+        "n": 120,
+        "ece": 0.065608,
+        "brier": 0.215583,
+        "coverage": 0.0,
+        "accuracy": 0.683333
+      },
+      {
+        "phase": "step_4",
+        "n": 160,
+        "ece": 0.076629,
+        "brier": 0.220845,
+        "coverage": 0.0,
+        "accuracy": 0.64375
+      },
+      {
+        "phase": "step_5",
+        "n": 200,
+        "ece": 0.048528,
+        "brier": 0.21877,
+        "coverage": 0.0,
+        "accuracy": 0.645
+      }
+    ]
+  }
+]

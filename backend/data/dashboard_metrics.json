@@ -1,0 +1,125 @@
+{
+  "top_contenders": [
+    {
+      "team": "Brazil",
+      "elo": 1578
+    },
+    {
+      "team": "France",
+      "elo": 1533
+    },
+    {
+      "team": "Argentina",
+      "elo": 1492
+    },
+    {
+      "team": "England",
+      "elo": 1438
+    },
+    {
+      "team": "Spain",
+      "elo": 1371
+    },
+    {
+      "team": "Germany",
+      "elo": 1346
+    },
+    {
+      "team": "Portugal",
+      "elo": 1287
+    },
+    {
+      "team": "Netherlands",
+      "elo": 1282
+    }
+  ],
+  "champion_probabilities": [
+    {
+      "team": "Brazil",
+      "prob": 0.22
+    },
+    {
+      "team": "France",
+      "prob": 0.18
+    },
+    {
+      "team": "Argentina",
+      "prob": 0.14
+    },
+    {
+      "team": "England",
+      "prob": 0.11
+    },
+    {
+      "team": "Spain",
+      "prob": 0.08
+    },
+    {
+      "team": "Germany",
+      "prob": 0.07
+    },
+    {
+      "team": "Portugal",
+      "prob": 0.05
+    },
+    {
+      "team": "Netherlands",
+      "prob": 0.04
+    }
+  ],
+  "biggest_movers": [],
+  "most_uncertain_teams": [
+    {
+      "team": "Germany",
+      "uncertainty": 0.22
+    },
+    {
+      "team": "England",
+      "uncertainty": 0.2
+    },
+    {
+      "team": "Argentina",
+      "uncertainty": 0.18
+    },
+    {
+      "team": "France",
+      "uncertainty": 0.15
+    },
+    {
+      "team": "Brazil",
+      "uncertainty": 0.12
+    }
+  ],
+  "most_stable_teams": [
+    {
+      "team": "Portugal",
+      "stability": 0.7
+    },
+    {
+      "team": "Netherlands",
+      "stability": 0.72
+    },
+    {
+      "team": "Spain",
+      "stability": 0.75
+    },
+    {
+      "team": "Germany",
+      "stability": 0.78
+    },
+    {
+      "team": "England",
+      "stability": 0.8
+    }
+  ],
+  "calibration_status": {
+    "accuracy": 0.7,
+    "brier": 0.2301437467561463,
+    "ece": 0.18794001108164735,
+    "coverage": 0.0,
+    "log_loss": 0.650644406354673,
+    "n": 10,
+    "timestamp": "2026-06-21T20:43:05.979785",
+    "drift_warning": true
+  }
+}

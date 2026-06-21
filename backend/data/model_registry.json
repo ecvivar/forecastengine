@@ -1,0 +1,35 @@
+[
+  {
+    "id": "8f9a0d4a19e7",
+    "sprint_version": "Sprint 8",
+    "config_version": "v8",
+    "calibration_version": "v1",
+    "ensemble_version": "ensemble_v2",
+    "description": "Base professional calibration",
+    "active": false,
+    "registered_at": "2026-06-21T20:43:05.889791",
+    "metadata": {}
+  },
+  {
+    "id": "91e00fca3665",
+    "sprint_version": "Sprint 8.5",
+    "config_version": "v8.5",
+    "calibration_version": "v2",
+    "ensemble_version": "ensemble_v3",
+    "description": "Professional calibration + coverage fix",
+    "active": false,
+    "registered_at": "2026-06-21T20:43:05.890790",
+    "metadata": {}
+  },
+  {
+    "id": "38cb1b8c85ac",
+    "sprint_version": "Sprint 9",
+    "config_version": "v9",
+    "calibration_version": "v3",
+    "ensemble_version": "ensemble_v3",
+    "description": "Scientific calibration + bootstrap uncertainty",
+    "active": true,
+    "registered_at": "2026-06-21T20:43:05.902784",
+    "metadata": {}
+  }
+]

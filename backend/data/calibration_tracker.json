@@ -1,0 +1,79 @@
+[
+  {
+    "timestamp": "2026-06-21T20:43:05.925791",
+    "window": "day",
+    "tournament": "world_cup_2026",
+    "n": 10,
+    "accuracy": 0.6,
+    "brier": 0.20053633011620603,
+    "ece": 0.24214177712150464,
+    "coverage": 0.0,
+    "log_loss": 0.5872242733956969
+  },
+  {
+    "timestamp": "2026-06-21T20:43:05.927783",
+    "window": "day",
+    "tournament": "world_cup_2026",
+    "n": 10,
+    "accuracy": 0.7,
+    "brier": 0.18411865486951107,
+    "ece": 0.23563116231205988,
+    "coverage": 0.0,
+    "log_loss": 0.5484537162997086
+  },
+  {
+    "timestamp": "2026-06-21T20:43:05.937783",
+    "window": "day",
+    "tournament": "world_cup_2026",
+    "n": 10,
+    "accuracy": 0.6,
+    "brier": 0.25784308976851067,
+    "ece": 0.27296905982759573,
+    "coverage": 0.0,
+    "log_loss": 0.7106442838973762
+  },
+  {
+    "timestamp": "2026-06-21T20:43:05.947787",
+    "window": "day",
+    "tournament": "world_cup_2026",
+    "n": 10,
+    "accuracy": 0.7,
+    "brier": 0.21280236949748774,
+    "ece": 0.24437468004228874,
+    "coverage": 0.0,
+    "log_loss": 0.6138496708212685
+  },
+  {
+    "timestamp": "2026-06-21T20:43:05.959783",
+    "window": "day",
+    "tournament": "world_cup_2026",
+    "n": 10,
+    "accuracy": 0.8,
+    "brier": 0.14685478527248041,
+    "ece": 0.192103147279657,
+    "coverage": 0.0,
+    "log_loss": 0.4740694902051746
+  },
+  {
+    "timestamp": "2026-06-21T20:43:05.969784",
+    "window": "day",
+    "tournament": "world_cup_2026",
+    "n": 10,
+    "accuracy": 0.7,
+    "brier": 0.17141749269398637,
+    "ece": 0.18799261471021908,
+    "coverage": 0.0,
+    "log_loss": 0.5229189816100244
+  },
+  {
+    "timestamp": "2026-06-21T20:43:05.979785",
+    "window": "day",
+    "tournament": "world_cup_2026",
+    "n": 10,
+    "accuracy": 0.7,
+    "brier": 0.2301437467561463,
+    "ece": 0.18794001108164735,
+    "coverage": 0.0,
+    "log_loss": 0.650644406354673
+  }
+]

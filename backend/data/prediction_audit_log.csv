@@ -1,0 +1,6 @@
+timestamp,competition_id,home_team,away_team,prob_home,prob_draw,prob_away,calibration_version,model_version,config_hash,ensemble_weights,ci_lower,ci_upper,uncertainty_spread,uncertainty_entropy,uncertainty_bootstrap_var,trigger
+2026-06-21T20:43:05.866790+00:00,WC2026,Brazil,Argentina,0.52,0.25,0.23,sprint8.5_v2,ensemble_v4,2ec6d65c31fe,,0.35,0.65,0.25,0.68,0.042,api
+2026-06-21T20:43:05.867793+00:00,WC2026,France,England,0.44,0.28,0.28,sprint8.5_v2,ensemble_v4,2ec6d65c31fe,,0.35,0.65,0.25,0.68,0.042,api
+2026-06-21T20:43:05.868785+00:00,WC2026,Germany,Spain,0.38,0.3,0.32,sprint8.5_v2,ensemble_v4,2ec6d65c31fe,,0.35,0.65,0.25,0.68,0.042,api
+2026-06-21T20:43:05.869788+00:00,WC2026,Portugal,Netherlands,0.41,0.29,0.3,sprint8.5_v2,ensemble_v4,2ec6d65c31fe,,0.35,0.65,0.25,0.68,0.042,api
+2026-06-21T20:43:05.870786+00:00,WC2026,Brazil,France,0.48,0.27,0.25,sprint8.5_v2,ensemble_v4,2ec6d65c31fe,,0.35,0.65,0.25,0.68,0.042,api
