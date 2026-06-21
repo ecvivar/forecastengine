@@ -1,5 +1,5 @@
 """
-Sprint 7.5 — Full Tournament Validation (v2).
+Sprint 7.5 - Full Tournament Validation (v2).
 Compares elo=0.40 vs elo=0.32 on 48-team Monte Carlo pipeline.
 
 Metrics:
@@ -231,7 +231,7 @@ def phase_stress_test(teams, group_mapping, config, n_stress=100, n_sims_per=5_0
 # ── Main ───────────────────────────────────────────────────────────────────
 def main():
     print("=" * 66)
-    print("  SPRINT 7.5 — FULL TOURNAMENT VALIDATION (v2)")
+    print("  SPRINT 7.5 - FULL TOURNAMENT VALIDATION (v2)")
     print("  48 teams | 10k base sims | 100 stress x 5k sims")
     print("=" * 66)
 
@@ -249,16 +249,16 @@ def main():
         print(f"  {label}")
         print(f"{'='*66}")
 
-        # Phase 1 — Match-level
-        logger.info("Phase 1 — Match-level ECE + Sharpness")
+        # Phase 1 - Match-level
+        logger.info("Phase 1 - Match-level ECE + Sharpness")
         t0 = time.time()
         ml = phase_match_level(cfg)
         print(f"    Matches: {ml['n_matches']} | Acc: {ml['accuracy']*100:.2f}% | "
               f"Brier: {ml['brier']:.4f} | ECE: {ml['ece']:.4f} | Sharp: {ml['sharpness']:.4f}")
         t_match = time.time() - t0
 
-        # Phase 2 — Baseline tournament
-        logger.info("Phase 2 — Baseline tournament 10k sims")
+        # Phase 2 - Baseline tournament
+        logger.info("Phase 2 - Baseline tournament 10k sims")
         t0 = time.time()
         champ_base, strengths, _, ci_coverage = phase_baseline_tournament(
             teams, group_mapping, cfg, 10_000
@@ -275,8 +275,8 @@ def main():
         pearson_r = float(np.corrcoef(str_list, champ_list)[0, 1])
         print(f"    Pearson(strength, champion): {pearson_r:.4f}")
 
-        # Phase 3 — Stress test + CI Coverage
-        logger.info("Phase 3 — Stress test (100 scenarios x 5k sims)")
+        # Phase 3 - Stress test + CI Coverage
+        logger.info("Phase 3 - Stress test (100 scenarios x 5k sims)")
         t0 = time.time()
         stress = phase_stress_test(teams, group_mapping, cfg, n_stress=100, n_sims_per=5_000)
         t_stress = time.time() - t0
@@ -317,7 +317,7 @@ def main():
         json.dump(all_results, f, indent=2, default=str)
     print(f"\nResults: {DOCS / 'tournament_validation_v2.json'}")
 
-    # Assessment — note: targets from Sprint 7.5 used different methodology
+    # Assessment - note: targets from Sprint 7.5 used different methodology
     r40 = all_results["Sprint 7  (elo=0.40)"]
     r32 = all_results["Sprint 7.5 (elo=0.32)"]
     print(f"\n{'='*66}")

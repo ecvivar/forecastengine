@@ -1,0 +1,317 @@
+{
+  "weight_optimization": {
+    "configs": [
+      {
+        "elo_weight": 0.4,
+        "accuracy": 0.484375,
+        "brier": 0.6108623288020834,
+        "logloss": 1.0185116242048287,
+        "rps": 0.22032877942708332,
+        "ece": 0.061117,
+        "sharpness": 1.0134929224029576,
+        "stress_std": 0.0985,
+        "elite_score": 0.4547
+      },
+      {
+        "elo_weight": 0.38,
+        "accuracy": 0.4947916666666667,
+        "brier": 0.6123287583854167,
+        "logloss": 1.0204683416506746,
+        "rps": 0.2210396703645833,
+        "ece": 0.034063,
+        "sharpness": 1.0143058992742862,
+        "stress_std": 0.093,
+        "elite_score": 0.5314
+      },
+      {
+        "elo_weight": 0.36,
+        "accuracy": 0.4947916666666667,
+        "brier": 0.6138541822395833,
+        "logloss": 1.0225244193776823,
+        "rps": 0.22177960124999999,
+        "ece": 0.030859,
+        "sharpness": 1.0150968328939793,
+        "stress_std": 0.0907,
+        "elite_score": 0.5325
+      }
+    ],
+    "best_elo_weight": 0.36
+  },
+  "temporal_validation": [
+    {
+      "split": "2014+2018 -> 2022",
+      "n_train": 128,
+      "n_val": 64,
+      "train": {
+        "accuracy": 0.4922,
+        "brier": 0.6227,
+        "logloss": 1.0306,
+        "ece": 0.1266
+      },
+      "validation": {
+        "accuracy": 0.5,
+        "brier": 0.6365,
+        "logloss": 1.0681,
+        "ece": 0.0679
+      },
+      "gap": {
+        "accuracy": 0.0078,
+        "brier": 0.0138,
+        "logloss": 0.0374,
+        "ece": -0.0588
+      }
+    },
+    {
+      "split": "2014 -> 2018",
+      "n_train": 64,
+      "n_val": 64,
+      "train": {
+        "accuracy": 0.4688,
+        "brier": 0.6628,
+        "logloss": 1.091,
+        "ece": 0.1324
+      },
+      "validation": {
+        "accuracy": 0.5,
+        "brier": 0.6126,
+        "logloss": 1.0124,
+        "ece": 0.0786
+      },
+      "gap": {
+        "accuracy": 0.0312,
+        "brier": -0.0502,
+        "logloss": -0.0786,
+        "ece": -0.0538
+      }
+    }
+  ],
+  "calibration_stability": {
+    "2014": {
+      "n_matches": 64,
+      "baseline_ece": 0.0568,
+      "baseline_mce": 0.1207,
+      "baseline_brier": 0.6027,
+      "global_temp_ece": 0.0412,
+      "regional_temp_ece": 0.0039
+    },
+    "2018": {
+      "n_matches": 64,
+      "baseline_ece": 0.0684,
+      "baseline_mce": 0.2346,
+      "baseline_brier": 0.6273,
+      "global_temp_ece": 0.0419,
+      "regional_temp_ece": 0.0425
+    },
+    "2022": {
+      "n_matches": 64,
+      "baseline_ece": 0.0795,
+      "baseline_mce": 0.2327,
+      "baseline_brier": 0.6116,
+      "global_temp_ece": 0.0674,
+      "regional_temp_ece": 0.0456
+    }
+  },
+  "ci_audit": {
+    "80%": {
+      "noise_scale": 0.15,
+      "coverage_rate": 1.0,
+      "avg_ci_width": 0.1033,
+      "passes": false
+    },
+    "90%": {
+      "noise_scale": 0.15,
+      "coverage_rate": 1.0,
+      "avg_ci_width": 0.1046,
+      "passes": false
+    },
+    "95%": {
+      "noise_scale": 0.15,
+      "coverage_rate": 1.0,
+      "avg_ci_width": 0.1029,
+      "passes": false
+    }
+  },
+  "tournament_forecasting": [
+    {
+      "tournament": "2014",
+      "n_matches": 64,
+      "actual_champion": "Germany",
+      "predicted_champion": "Brazil",
+      "champion_probability": 1460.0,
+      "champion_rank": 1,
+      "top4_inclusion": 75.0,
+      "top8_inclusion": 87.5,
+      "tournament_brier": 0.6628
+    },
+    {
+      "tournament": "2018",
+      "n_matches": 64,
+      "actual_champion": "France",
+      "predicted_champion": "Spain",
+      "champion_probability": 1400.0,
+      "champion_rank": 3,
+      "top4_inclusion": 100.0,
+      "top8_inclusion": 75.0,
+      "tournament_brier": 0.6126
+    },
+    {
+      "tournament": "2022",
+      "n_matches": 64,
+      "actual_champion": "France",
+      "predicted_champion": "France",
+      "champion_probability": 1580.0,
+      "champion_rank": 5,
+      "top4_inclusion": 50.0,
+      "top8_inclusion": 75.0,
+      "tournament_brier": 0.6365
+    }
+  ],
+  "production_robustness": {
+    "baseline_hw": 0.4893,
+    "scenarios": {
+      "injury": {
+        "mean": 0.4172,
+        "std": 0.0108,
+        "drift_pct": 2.2
+      },
+      "red_card": {
+        "mean": 0.3149,
+        "std": 0.0122,
+        "drift_pct": 2.5
+      },
+      "suspension": {
+        "mean": 0.5318,
+        "std": 0.0058,
+        "drift_pct": 1.19
+      },
+      "form_drop": {
+        "mean": 0.3583,
+        "std": 0.0237,
+        "drift_pct": 4.84
+      },
+      "form_boost": {
+        "mean": 0.5783,
+        "std": 0.0143,
+        "drift_pct": 2.92
+      }
+    }
+  },
+  "explainability_consistency": {
+    "n_matches": 194,
+    "mean": 1.0,
+    "min": 0.9999999999999998,
+    "max": 1.0000000000000002,
+    "std": 6.903033747032813e-17,
+    "abs_error_mean": 3.261995484723398e-17,
+    "pct_within_1pct": 100.0
+  },
+  "elite_benchmark": [
+    {
+      "accuracy": 0.481,
+      "brier": 0.629,
+      "logloss": 1.044,
+      "ece": 0.042,
+      "stress_std": 0.095,
+      "pearson": 0.92,
+      "sprint": "Sprint 3",
+      "elite_score": 0.395
+    },
+    {
+      "accuracy": 0.483,
+      "brier": 0.611,
+      "logloss": 1.019,
+      "ece": 0.061,
+      "stress_std": 0.093,
+      "pearson": 0.98,
+      "sprint": "Sprint 4A",
+      "elite_score": 0.4848
+    },
+    {
+      "accuracy": 0.526,
+      "brier": 0.592,
+      "logloss": 0.997,
+      "ece": 0.085,
+      "stress_std": 0.09,
+      "pearson": 0.98,
+      "sprint": "Sprint 5",
+      "elite_score": 0.6488
+    },
+    {
+      "accuracy": 0.526,
+      "brier": 0.598,
+      "logloss": 1.003,
+      "ece": 0.051,
+      "stress_std": 0.092,
+      "pearson": 0.98,
+      "sprint": "Sprint 6",
+      "elite_score": 0.6803
+    },
+    {
+      "accuracy": 0.526,
+      "brier": 0.598,
+      "logloss": 1.003,
+      "ece": 0.06,
+      "stress_std": 0.087,
+      "pearson": 0.98,
+      "sprint": "Sprint 7",
+      "elite_score": 0.6705
+    },
+    {
+      "accuracy": 0.526,
+      "brier": 0.59,
+      "logloss": 0.989,
+      "ece": 0.042,
+      "stress_std": 0.068,
+      "pearson": 0.98,
+      "sprint": "Sprint 7.5",
+      "elite_score": 0.7787
+    },
+    {
+      "accuracy": 0.4947916666666667,
+      "brier": 0.6138541822395833,
+      "logloss": 1.0225244193776823,
+      "ece": 0.030859,
+      "stress_std": 0.0907,
+      "pearson": 0.9031,
+      "sprint": "Sprint 8",
+      "elite_score": 0.5336
+    }
+  ],
+  "elite_verdict": {
+    "criteria": {
+      "Calibration: ECE <= 0.040": {
+        "pass": true,
+        "value": 0.0309
+      },
+      "Robustness: Stress Std <= 0.065": {
+        "pass": false,
+        "value": 0.0907
+      },
+      "CI Coverage: 85-95%": {
+        "pass": false,
+        "value": 1.0
+      },
+      "Forecasting: Top4 >= 66%": {
+        "pass": "True",
+        "value": 75.0
+      },
+      "Consistency: Pearson > 0.95": {
+        "pass": false,
+        "value": 0.9031
+      },
+      "Explainability: Drivers = 100% +/- 0.5%": {
+        "pass": true,
+        "value": 0.0
+      },
+      "EliteScore > Sprint 7.5": {
+        "pass": false,
+        "value": 0.5336
+      }
+    },
+    "passed": 3,
+    "total": 7,
+    "grade": "RESEARCH",
+    "best_elo_weight": 0.36,
+    "best_elite_score": 0.5336
+  }
+}

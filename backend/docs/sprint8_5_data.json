@@ -1,0 +1,610 @@
+{
+  "stress_attribution": {
+    "baseline_home_win": 0.4539,
+    "var_total": 0.002889,
+    "n_per_signal": 200,
+    "attributions": [
+      {
+        "signal": "elo",
+        "var_partial": 0.001535,
+        "var_pct": 53.12,
+        "mean": 0.4476,
+        "std": 0.0392
+      },
+      {
+        "signal": "xg_attack",
+        "var_partial": 0.000905,
+        "var_pct": 31.33,
+        "mean": 0.4522,
+        "std": 0.0301
+      },
+      {
+        "signal": "xg_defense",
+        "var_partial": 0.000269,
+        "var_pct": 9.33,
+        "mean": 0.4532,
+        "std": 0.0164
+      },
+      {
+        "signal": "home_advantage",
+        "var_partial": 9.7e-05,
+        "var_pct": 3.36,
+        "mean": 0.444,
+        "std": 0.0098
+      },
+      {
+        "signal": "bayesian_prior",
+        "var_partial": 4.1e-05,
+        "var_pct": 1.42,
+        "mean": 0.4527,
+        "std": 0.0064
+      },
+      {
+        "signal": "ensemble_weights",
+        "var_partial": 4.1e-05,
+        "var_pct": 1.42,
+        "mean": 0.4535,
+        "std": 0.0064
+      },
+      {
+        "signal": "strength_diff",
+        "var_partial": 2e-05,
+        "var_pct": 0.69,
+        "mean": 0.4538,
+        "std": 0.0045
+      },
+      {
+        "signal": "fifa",
+        "var_partial": 0.0,
+        "var_pct": 0.0,
+        "mean": 0.4539,
+        "std": 0.0
+      },
+      {
+        "signal": "poisson_model",
+        "var_partial": 0.0,
+        "var_pct": 0.0,
+        "mean": 0.4521,
+        "std": 0.0
+      },
+      {
+        "signal": "dixon_coles",
+        "var_partial": 0.0,
+        "var_pct": 0.0,
+        "mean": 0.4525,
+        "std": 0.0003
+      }
+    ]
+  },
+  "ensemble_dominance": {
+    "current": {
+      "weights": {
+        "poisson_xg": 0.25,
+        "bayesian_elo": 0.25,
+        "dixon_coles": 0.25,
+        "strength_diff": 0.25
+      },
+      "weight_mean": 0.25,
+      "weight_variance": 0.0,
+      "entropy": 1.3863,
+      "effective_models": 4.0,
+      "max_weight": 0.25,
+      "min_weight": 0.25
+    },
+    "dominance_ratio": 0.5,
+    "simulation": {
+      "mean_effective": 3.6278,
+      "std_effective": 0.2467,
+      "p5": 3.1736,
+      "p95": 3.9563,
+      "min_possible": 2.4896,
+      "max_possible": 3.9991
+    },
+    "interpretation": "Excellent - all 4 models contribute meaningfully."
+  },
+  "stress_reduction": [
+    {
+      "config": "A - Current Production",
+      "stress_std": 0.0576,
+      "ece": 0.0573,
+      "brier": 0.5983,
+      "accuracy": 0.5312
+    },
+    {
+      "config": "B - Limit StrengthDiff <= 30%",
+      "stress_std": 0.0598,
+      "ece": 0.0568,
+      "brier": 0.6037,
+      "accuracy": 0.5208
+    },
+    {
+      "config": "C - Limit BayesianElo <= 30%",
+      "stress_std": 0.0556,
+      "ece": 0.0816,
+      "brier": 0.5961,
+      "accuracy": 0.5573
+    },
+    {
+      "config": "D - Regularized Ensemble",
+      "stress_std": 0.0577,
+      "ece": 0.0579,
+      "brier": 0.6004,
+      "accuracy": 0.5312
+    }
+  ],
+  "ci_width_analysis": [
+    {
+      "method": "percentile",
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0898,
+      "std_width": 0.0137,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0865,
+      "std_width": 0.0165,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0898,
+      "std_width": 0.0137,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0846,
+      "std_width": 0.0171,
+      "n_matches": 20
+    },
+    {
+      "method": "percentile",
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1097,
+      "std_width": 0.0124,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1064,
+      "std_width": 0.015,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1097,
+      "std_width": 0.0124,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "observed_coverage": 1.0,
+      "avg_width": 0.105,
+      "std_width": 0.0143,
+      "n_matches": 20
+    },
+    {
+      "method": "percentile",
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1248,
+      "std_width": 0.0088,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1203,
+      "std_width": 0.013,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1248,
+      "std_width": 0.0088,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1209,
+      "std_width": 0.0122,
+      "n_matches": 20
+    }
+  ],
+  "coverage_curve": [
+    {
+      "method": "percentile",
+      "alpha": 0.5,
+      "nominal_coverage": 0.5,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0531,
+      "std_width": 0.0149,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.5,
+      "nominal_coverage": 0.5,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0488,
+      "std_width": 0.0166,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.5,
+      "nominal_coverage": 0.5,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0531,
+      "std_width": 0.0149,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.5,
+      "nominal_coverage": 0.5,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0423,
+      "std_width": 0.0139,
+      "n_matches": 20
+    },
+    {
+      "method": "percentile",
+      "alpha": 0.4,
+      "nominal_coverage": 0.6,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0638,
+      "std_width": 0.0154,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.4,
+      "nominal_coverage": 0.6,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0601,
+      "std_width": 0.018,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.4,
+      "nominal_coverage": 0.6,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0638,
+      "std_width": 0.0154,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.4,
+      "nominal_coverage": 0.6,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0554,
+      "std_width": 0.0157,
+      "n_matches": 20
+    },
+    {
+      "method": "percentile",
+      "alpha": 0.3,
+      "nominal_coverage": 0.7,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0749,
+      "std_width": 0.0154,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.3,
+      "nominal_coverage": 0.7,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0708,
+      "std_width": 0.0177,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.3,
+      "nominal_coverage": 0.7,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0749,
+      "std_width": 0.0154,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.3,
+      "nominal_coverage": 0.7,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0694,
+      "std_width": 0.0167,
+      "n_matches": 20
+    },
+    {
+      "method": "percentile",
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0898,
+      "std_width": 0.0137,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0865,
+      "std_width": 0.0165,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0898,
+      "std_width": 0.0137,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.2,
+      "nominal_coverage": 0.8,
+      "observed_coverage": 1.0,
+      "avg_width": 0.0846,
+      "std_width": 0.0171,
+      "n_matches": 20
+    },
+    {
+      "method": "percentile",
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1097,
+      "std_width": 0.0124,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1064,
+      "std_width": 0.015,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1097,
+      "std_width": 0.0124,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.1,
+      "nominal_coverage": 0.9,
+      "observed_coverage": 1.0,
+      "avg_width": 0.105,
+      "std_width": 0.0143,
+      "n_matches": 20
+    },
+    {
+      "method": "percentile",
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1248,
+      "std_width": 0.0088,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1203,
+      "std_width": 0.013,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1248,
+      "std_width": 0.0088,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.05,
+      "nominal_coverage": 0.95,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1209,
+      "std_width": 0.0122,
+      "n_matches": 20
+    },
+    {
+      "method": "percentile",
+      "alpha": 0.01,
+      "nominal_coverage": 0.99,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1437,
+      "std_width": 0.0071,
+      "n_matches": 20
+    },
+    {
+      "method": "bca",
+      "alpha": 0.01,
+      "nominal_coverage": 0.99,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1449,
+      "std_width": 0.0067,
+      "n_matches": 20
+    },
+    {
+      "method": "studentized",
+      "alpha": 0.01,
+      "nominal_coverage": 0.99,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1437,
+      "std_width": 0.0071,
+      "n_matches": 20
+    },
+    {
+      "method": "adaptive",
+      "alpha": 0.01,
+      "nominal_coverage": 0.99,
+      "observed_coverage": 1.0,
+      "avg_width": 0.1448,
+      "std_width": 0.0072,
+      "n_matches": 20
+    }
+  ],
+  "pearson_audit": {
+    "n_sims": 3000,
+    "n_teams": 48,
+    "correlations": [
+      {
+        "stage": "champion",
+        "pearson": 0.909,
+        "spearman": 0.9562,
+        "kendall": 0.8306
+      },
+      {
+        "stage": "final",
+        "pearson": 0.9284,
+        "spearman": 0.9486,
+        "kendall": 0.7998
+      },
+      {
+        "stage": "semi",
+        "pearson": 0.941,
+        "spearman": 0.94,
+        "kendall": 0.7778
+      },
+      {
+        "stage": "quarter",
+        "pearson": 0.9536,
+        "spearman": 0.9383,
+        "kendall": 0.7737
+      },
+      {
+        "stage": "r16",
+        "pearson": 0.9607,
+        "spearman": 0.9438,
+        "kendall": 0.7814
+      }
+    ],
+    "mean_pearson": 0.9385
+  },
+  "mc_noise_analysis": [
+    {
+      "n_sims": 1000,
+      "mean_pearson": 0.906,
+      "pearson_std": 0.0102,
+      "champion_variance": 0.000664,
+      "top_team_variance": 2.9e-05
+    },
+    {
+      "n_sims": 2000,
+      "mean_pearson": 0.906,
+      "pearson_std": 0.0029,
+      "champion_variance": 0.000698,
+      "top_team_variance": 2e-05
+    },
+    {
+      "n_sims": 5000,
+      "mean_pearson": 0.9143,
+      "pearson_std": 0.0007,
+      "champion_variance": 0.000679,
+      "top_team_variance": 1e-05
+    },
+    {
+      "n_sims": 10000,
+      "mean_pearson": 0.916,
+      "pearson_std": 0.0018,
+      "champion_variance": 0.000679,
+      "top_team_variance": 4e-06
+    }
+  ],
+  "uncertainty_consistency": {
+    "n_matches": 20,
+    "mean_uncertainty": 0.8259,
+    "std_uncertainty": 0.0733,
+    "mean_ci_width": 0.1074,
+    "std_ci_width": 0.012,
+    "mean_entropy": 1.0394,
+    "corr_uncertainty_width": 0.1143,
+    "corr_entropy_width": 0.0947,
+    "corr_uncertainty_entropy": 0.8466,
+    "passes": false,
+    "interpretation": "Weak - uncertainty and CI width are poorly aligned."
+  },
+  "elite_readiness": {
+    "grade": "PROFESSIONAL",
+    "passes": 3,
+    "total": 6,
+    "criteria": {
+      "Stress <= 0.070": {
+        "pass": true,
+        "value": "0.0576"
+      },
+      "Coverage 85-95%": {
+        "pass": false,
+        "value": "100.0%"
+      },
+      "Pearson > 0.95": {
+        "pass": false,
+        "value": "0.9090"
+      },
+      "Effective Models >= 3": {
+        "pass": true,
+        "value": "4.00"
+      },
+      "Uncertainty Corr > 0.70": {
+        "pass": false,
+        "value": "0.1143"
+      },
+      "Explainability 100% +/- 0.5%": {
+        "pass": true,
+        "value": "100.0%"
+      }
+    }
+  }
+}
