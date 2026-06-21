@@ -25,6 +25,7 @@ from app.api import (
     scenarios,
     simulations,
     teams,
+    explain,
 )
 from app.core.config import get_settings
 from app.core.error_handler import (
