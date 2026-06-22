@@ -19,21 +19,21 @@ router = APIRouter(prefix="/history", tags=["History & Audit"])
 
 
 @router.get("/model-versions")
-@cached("history:model-versions", expire=60)
+@cached("history:model-versions", ttl=60)
 def get_model_versions():
     registry = ModelRegistry(REGISTRY_PATH)
     return registry._read()
 
 
 @router.get("/calibration")
-@cached("history:calibration", expire=60)
+@cached("history:calibration", ttl=60)
 def get_calibration_history():
     tracker = CalibrationTracker(TRACKER_PATH)
     return tracker._read()
 
 
 @router.get("/audit")
-@cached("history:audit", expire=30)
+@cached("history:audit", ttl=30)
 def get_audit_log(limit: int = Query(50, ge=1, le=500)):
     log_path = AUDIT_LOG
     if not log_path.exists():
@@ -47,7 +47,7 @@ def get_audit_log(limit: int = Query(50, ge=1, le=500)):
 
 
 @router.get("/drift")
-@cached("history:drift", expire=30)
+@cached("history:drift", ttl=30)
 def get_drift_report():
     detector = DriftDetector()
     tracker = CalibrationTracker(TRACKER_PATH)
