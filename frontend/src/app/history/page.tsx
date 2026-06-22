@@ -1,41 +1,44 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api, Simulation, SimulationDetail } from "@/lib/api";
+import { api, Simulation, SimulationDetail, ModelVersion, CalibrationHistoryEntry, AuditEntry, DriftReport } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
 import { formatDateTime } from "@/lib/utils";
 import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+} from "recharts";
+import {
   Clock, RefreshCw, CheckCircle, Play, ChevronDown, ChevronRight,
+  Activity, Database, AlertTriangle, BarChart3,
 } from "lucide-react";
-
-interface ChangelogEntry {
-  version: string;
-  date: string;
-  title: string;
-  description: string;
-  type: "release" | "sprint" | "hotfix";
-}
-
-const CHANGELOG: ChangelogEntry[] = [
-  { version: "v1.0", date: "2026-06-01", title: "Initial Release", description: "Full tournament simulation with Monte Carlo (10K runs), calibration v3, ELO/IGF ranking, and World Cup 2026 fixture support.", type: "release" },
-  { version: "Sprint 10", date: "2026-06-15", title: "Command Center UI", description: "Frontend redesign with dashboard, team detail pages, comparison tool, explainability panel, and monitoring dashboard.", type: "sprint" },
-  { version: "Sprint 9.5", date: "2026-05-25", title: "Production Hardening", description: "Audit trail, model registry, calibration tracking, drift detection, and reality-based recalibration simulator.", type: "sprint" },
-  { version: "Sprint 9", date: "2026-05-10", title: "Scientific Reliability", description: "Calibration v3 with Platt scaling, isotonic regression, beta calibration; 90/100 World Cup Readiness Score.", type: "sprint" },
-  { version: "Sprint 8.5", date: "2026-04-20", title: "Data Quality & Coverage", description: "Data quality pipeline, missing value imputation, outlier detection, tournament coverage expansion.", type: "sprint" },
-  { version: "Sprint 8", date: "2026-04-01", title: "Historical Simulation & Calibration v2", description: "10K Monte Carlo pipeline, historical backtesting, calibration v2 with temperature scaling.", type: "sprint" },
-];
 
 export default function HistoryPage() {
   const [simulations, setSimulations] = useState<Simulation[]>([]);
   const [selectedSim, setSelectedSim] = useState<SimulationDetail | null>(null);
   const [expandedSim, setExpandedSim] = useState<string | null>(null);
+  const [modelVersions, setModelVersions] = useState<ModelVersion[]>([]);
+  const [calHistory, setCalHistory] = useState<CalibrationHistoryEntry[]>([]);
+  const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
+  const [drift, setDrift] = useState<DriftReport | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.simulations.list()
-      .then(setSimulations)
+    Promise.all([
+      api.simulations.list(),
+      api.history.modelVersions().catch(() => [] as ModelVersion[]),
+      api.history.calibration().catch(() => [] as CalibrationHistoryEntry[]),
+      api.history.audit().catch(() => [] as AuditEntry[]),
+      api.history.drift().catch(() => null),
+    ])
+      .then(([sims, versions, cal, audit, driftReport]) => {
+        setSimulations(sims);
+        setModelVersions(versions);
+        setCalHistory(cal);
+        setAuditLog(audit);
+        setDrift(driftReport);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -66,40 +69,147 @@ export default function HistoryPage() {
       <div>
         <div className="text-xs text-[hsl(var(--muted))] uppercase tracking-wider mb-1">Timeline</div>
         <h1 className="page-title">History</h1>
-        <p className="page-subtitle">Versioned predictions, simulation runs, and development milestones.</p>
+        <p className="page-subtitle">Model versions, calibration tracking, audit trail, and simulation runs.</p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-sm">
-            <Clock className="w-4 h-4 text-blue-500" />
-            Development Milestones
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="relative">
-            <div className="absolute left-4 top-0 bottom-0 w-px bg-[hsl(var(--border))]" />
-            <div className="space-y-6">
-              {CHANGELOG.map((entry) => (
-                <div key={entry.version} className="relative pl-10">
-                  <div className={`absolute left-2.5 w-3 h-3 rounded-full border-2 border-white ${
-                    entry.type === "release" ? "bg-green-500" : entry.type === "sprint" ? "bg-blue-500" : "bg-yellow-500"
-                  }`} style={{ top: 4 }} />
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge className={entry.type === "release" ? "bg-green-100 text-green-700" : entry.type === "sprint" ? "bg-blue-100 text-blue-700" : "bg-yellow-100 text-yellow-700"}>
-                      {entry.version}
-                    </Badge>
-                    <span className="text-xs text-[hsl(var(--muted))]">{entry.date}</span>
+      {/* Model Versions */}
+      {modelVersions.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <BarChart3 className="w-4 h-4 text-blue-500" />
+              Model Versions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-[hsl(var(--muted))] text-xs border-b border-[hsl(var(--border))]">
+                    <th className="pb-2 pr-3">Version</th>
+                    <th className="pb-2 pr-3">Calibration</th>
+                    <th className="pb-2 pr-3">Ensemble</th>
+                    <th className="pb-2 pr-3">Active</th>
+                    <th className="pb-2 pr-3">Registered</th>
+                    <th className="pb-2">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {modelVersions.map((mv) => (
+                    <tr key={mv.id} className="border-b border-[hsl(var(--border))] last:border-0">
+                      <td className="py-2 pr-3 font-medium">{mv.sprint_version}</td>
+                      <td className="py-2 pr-3 text-[hsl(var(--muted))]">{mv.calibration_version}</td>
+                      <td className="py-2 pr-3 text-[hsl(var(--muted))]">{mv.ensemble_version}</td>
+                      <td className="py-2 pr-3">{mv.active ? <Badge className="bg-green-100 text-green-700">Active</Badge> : "—"}</td>
+                      <td className="py-2 pr-3 text-xs text-[hsl(var(--muted))]">{formatDateTime(mv.registered_at)}</td>
+                      <td className="py-2 text-xs text-[hsl(var(--muted))]">{mv.description || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Calibration Trend */}
+      {calHistory.length > 1 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Activity className="w-4 h-4 text-green-500" />
+              Calibration Trend
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={calHistory.map((e) => ({
+                  ts: formatDateTime(e.timestamp),
+                  brier: +(e.brier * 100).toFixed(2),
+                  accuracy: +(e.accuracy * 100).toFixed(1),
+                  ece: +(e.ece * 100).toFixed(2),
+                }))}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="ts" tick={{ fontSize: 9 }} />
+                  <YAxis tick={{ fontSize: 11 }} />
+                  <Tooltip />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Line type="monotone" dataKey="brier" stroke="#ef4444" strokeWidth={2} dot={false} name="Brier %" />
+                  <Line type="monotone" dataKey="accuracy" stroke="#22c55e" strokeWidth={2} dot={false} name="Accuracy %" />
+                  <Line type="monotone" dataKey="ece" stroke="#f59e0b" strokeWidth={2} dot={false} name="ECE %" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Drift Status */}
+      {drift && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <AlertTriangle className="w-4 h-4 text-yellow-500" />
+              Drift Detection
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2 mb-2">
+              <Badge className={drift.has_drift ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}>
+                {drift.has_drift ? "Drift Detected" : "Stable"}
+              </Badge>
+              <span className="text-xs text-[hsl(var(--muted))]">
+                Score: {(drift.drift_score * 100).toFixed(1)}% &middot; {formatDateTime(drift.timestamp)}
+              </span>
+            </div>
+            {drift.drifted_features.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {drift.drifted_features.map((f) => (
+                  <Badge key={f} variant="danger">{f}</Badge>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Audit Log */}
+      {auditLog.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Database className="w-4 h-4 text-purple-500" />
+              Audit Log
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {auditLog.slice(0, 20).map((entry, i) => (
+                <div key={entry.id || i} className="flex items-start gap-3 py-2 border-b border-[hsl(var(--border))] last:border-0 text-sm">
+                  <Clock className="w-3 h-3 mt-0.5 text-[hsl(var(--muted))]" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="default" className="text-2xs">{String(entry.action || entry.home_team || "?")}</Badge>
+                      <span className="text-xs text-[hsl(var(--muted))]">{formatDateTime(entry.timestamp)}</span>
+                    </div>
+                    <div className="text-xs mt-0.5 truncate">
+                      {entry.details || `${entry.home_team || ""} vs ${entry.away_team || ""}`}
+                    </div>
                   </div>
-                  <p className="text-sm font-medium">{entry.title}</p>
-                  <p className="text-xs text-[hsl(var(--muted))] mt-0.5">{entry.description}</p>
+                  {entry.status && (
+                    <Badge className={entry.status === "success" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
+                      {entry.status}
+                    </Badge>
+                  )}
                 </div>
               ))}
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
+      {/* Simulation Runs */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-sm">

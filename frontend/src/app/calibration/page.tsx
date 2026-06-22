@@ -60,9 +60,10 @@ export default function CalibrationPage() {
 
   return (
     <div className="container-page space-y-6">
-      <div className="flex items-center gap-2">
-        <BarChart3 className="w-6 h-6 text-primary-600" />
+      <div>
+        <div className="text-xs text-[hsl(var(--muted))] uppercase tracking-wider mb-1">Accuracy</div>
         <h1 className="page-title">Calibration Dashboard</h1>
+        <p className="page-subtitle">Brier score, ECE, calibration curves, and confederation bias tracking.</p>
       </div>
 
       {/* Summary */}

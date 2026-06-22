@@ -127,7 +127,11 @@ export default function RankingsPage() {
 
   return (
     <div className="container-page space-y-6">
-      <h1 className="page-title">Rankings &amp; Power Rankings</h1>
+      <div>
+        <div className="text-xs text-[hsl(var(--muted))] uppercase tracking-wider mb-1">Standings</div>
+        <h1 className="page-title">Rankings &amp; Power Rankings</h1>
+        <p className="page-subtitle">IGF scores, Elo ratings, and tier-based power rankings for all 48 teams.</p>
+      </div>
 
       <div className="flex gap-2 flex-wrap">
         {[

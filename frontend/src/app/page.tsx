@@ -4,13 +4,14 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { api, type DashboardData } from "@/lib/api";
+import { api, type DashboardData, type NarrativeResponse, type MomentumResponse, type MatchOfDayResponse } from "@/lib/api";
 import { formatPercent, getContinentColor, getStageLabel } from "@/lib/utils";
 import ProbabilityBar from "@/components/ProbabilityBar";
 import { SkeletonPage } from "@/components/ui/skeleton";
 import {
   Trophy, TrendingUp, Activity, Shield, AlertTriangle,
-  BarChart3, ArrowUpRight, BrainCircuit,
+  BarChart3, ArrowUpRight, ArrowDownRight, BrainCircuit, RefreshCw, Globe,
+  Star, Zap, MessageSquare, ArrowUpCircle, ArrowDownCircle,
 } from "lucide-react";
 
 const STATUS_OK = { label: "Calibration OK", color: "text-green-600 bg-green-50" };
@@ -18,13 +19,23 @@ const STATUS_ELITE = { label: "ELITE (5/5)", color: "text-blue-600 bg-blue-50" }
 
 export default function CommandCenter() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [narrative, setNarrative] = useState<NarrativeResponse | null>(null);
+  const [momentum, setMomentum] = useState<MomentumResponse | null>(null);
+  const [motd, setMotd] = useState<MatchOfDayResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.dashboard.get()
-      .then(setData)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    Promise.all([
+      api.dashboard.get(),
+      api.insights.narrative().catch(() => null),
+      api.insights.momentum().catch(() => null),
+      api.insights.matchOfTheDay().catch(() => null),
+    ]).then(([d, n, m, motd]) => {
+      setData(d);
+      setNarrative(n);
+      setMomentum(m);
+      setMotd(motd);
+    }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
@@ -210,6 +221,179 @@ export default function CommandCenter() {
           </CardContent>
         </Card>
       )}
+
+      {/* Groups Overview */}
+      {data.groups && data.groups.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm">
+              <Globe className="w-4 h-4 text-blue-500" />
+              Group Standings
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {data.groups.map((g) => (
+                <div key={g.name} className="panel p-3">
+                  <div className="text-xs font-semibold mb-2 uppercase tracking-wider">Group {g.name}</div>
+                  <div className="space-y-1">
+                    {g.teams.slice(0, 4).map((t) => (
+                      <div key={t.team_name} className="flex items-center justify-between text-xs py-0.5">
+                        <span className="flex items-center gap-1.5">
+                          <span className={`w-1.5 h-1.5 rounded-full ${t.qualified ? "bg-green-500" : "bg-gray-300"}`} />
+                          <span className="truncate max-w-[100px]">{t.team_name}</span>
+                        </span>
+                        <span className="font-mono">{t.points}pts</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Link href="/groups" className="flex items-center gap-1 text-xs text-primary-600 hover:underline mt-3">
+              <ArrowUpRight className="w-3 h-3" /> Full group analysis
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Match of the Day */}
+      {motd?.top_match && (
+        <Card className="border-2 border-yellow-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-sm text-yellow-700">
+              <Star className="w-4 h-4" />
+              Today&apos;s Most Important Match
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium">{motd.top_match.home_team}</div>
+              <div className="text-center">
+                <div className="text-lg font-bold font-mono">{motd.top_match.most_likely_score}</div>
+                <Badge className={motd.top_match.contender_involved ? "bg-green-100 text-green-700" : "bg-gray-100"}>{motd.top_match.stage}</Badge>
+              </div>
+              <div className="text-sm font-medium">{motd.top_match.away_team}</div>
+            </div>
+            <div className="mt-2">
+              <ProbabilityBar
+                homeWin={motd.top_match.home_win_prob}
+                draw={motd.top_match.draw_prob}
+                awayWin={motd.top_match.away_win_prob}
+                homeLabel={motd.top_match.home_team}
+                awayLabel={motd.top_match.away_team}
+                height={24}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Narrative Headline */}
+      {narrative?.headline && (
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <MessageSquare className="w-5 h-5 text-primary-500 shrink-0" />
+            <div>
+              <div className="text-sm font-semibold">{narrative.headline}</div>
+              <div className="text-xs text-[hsl(var(--muted))] mt-0.5">{narrative.story}</div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Insights Widgets Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        {/* Biggest Risers */}
+        {momentum && momentum.risers.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xs text-green-600">
+                <ArrowUpCircle className="w-3 h-3" />
+                Biggest Risers
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                {momentum.risers.slice(0, 3).map((r) => (
+                  <div key={r.team_name} className="flex items-center justify-between text-xs py-0.5">
+                    <span>{r.team_name}</span>
+                    <span className="text-green-600 font-mono">+{r.delta_win.toFixed(1)}%</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Biggest Fallers */}
+        {momentum && momentum.fallers.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xs text-red-600">
+                <ArrowDownCircle className="w-3 h-3" />
+                Biggest Fallers
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                {momentum.fallers.slice(0, 3).map((r) => (
+                  <div key={r.team_name} className="flex items-center justify-between text-xs py-0.5">
+                    <span>{r.team_name}</span>
+                    <span className="text-red-600 font-mono">{r.delta_win.toFixed(1)}%</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Dark Horses / Tourney Headlines */}
+        {narrative && narrative.news_feed.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xs text-purple-600">
+                <Zap className="w-3 h-3" />
+                Tournament Headlines
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                {narrative.news_feed.slice(0, 3).map((event, i) => (
+                  <div key={i} className="flex items-center gap-1.5 text-xs">
+                    {event.direction === "up" ? (
+                      <ArrowUpRight className="w-3 h-3 text-green-500 shrink-0" />
+                    ) : (
+                      <ArrowDownRight className="w-3 h-3 text-red-500 shrink-0" />
+                    )}
+                    <span>{event.headline}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          { href: "/predictions", label: "Predict Match", icon: Activity },
+          { href: "/simulations", label: "Run Simulation", icon: RefreshCw },
+          { href: "/compare", label: "Compare Teams", icon: BarChart3 },
+          { href: "/momentum", label: "Momentum", icon: TrendingUp },
+        ].map((action) => (
+          <Link key={action.href} href={action.href}>
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-4 flex items-center gap-3">
+                <action.icon className="w-5 h-5 text-primary-500" />
+                <span className="text-sm font-medium">{action.label}</span>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

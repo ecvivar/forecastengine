@@ -2,13 +2,13 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
-import { api, type IGFScore, type SimulationProbabilities, type TeamStageProb } from "@/lib/api";
+import { api, type IGFScore, type TeamStageProb, type TeamInsightResponse } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { BarChart, Bar, XAxis, YAxis, Cell } from "recharts";
-import { Shield, BarChart3, Activity, TrendingUp } from "lucide-react";
+import { Shield, BarChart3, Activity, TrendingUp, MessageSquare, Target, Swords, Lightbulb } from "lucide-react";
 
 const COLORS = ["#3b82f6", "#22c55e", "#eab308", "#ef4444", "#a855f7"];
 
@@ -19,6 +19,7 @@ export default function TeamDetailPage() {
   const [team, setTeam] = useState<any>(null);
   const [igf, setIgf] = useState<IGFScore | null>(null);
   const [simProbs, setSimProbs] = useState<TeamStageProb | null>(null);
+  const [insight, setInsight] = useState<TeamInsightResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function TeamDetailPage() {
         const tp = sim.teams.find((s: TeamStageProb) => s.team_name === t.name);
         setSimProbs(tp || null);
       }
+      api.insights.team(t.name).then(setInsight).catch(() => {});
     }).catch(() => {}).finally(() => setLoading(false));
   }, [teamId]);
 
@@ -172,6 +174,78 @@ export default function TeamDetailPage() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Sprint 10B — Team Insight */}
+      {insight && (
+        <>
+          {/* Story */}
+          {insight.story && (
+            <Card className="border-2 border-primary-100">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <MessageSquare className="w-4 h-4 text-primary-600" />
+                  Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm leading-relaxed">{insight.story}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Most Likely Path */}
+          {insight.most_likely_path && insight.most_likely_path.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Target className="w-4 h-4 text-blue-500" />
+                  Most Likely Path
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {insight.most_likely_path.map((stage, i) => (
+                    <div key={stage.stage} className="flex items-center gap-2">
+                      <div className="panel p-2 text-center min-w-[80px]">
+                        <div className="text-xs font-medium">{stage.stage}</div>
+                        <div className="text-sm font-bold font-mono text-primary-600">{stage.probability.toFixed(1)}%</div>
+                      </div>
+                      {i < insight.most_likely_path.length - 1 && (
+                        <span className="text-[hsl(var(--muted))] text-xs">→</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Hardest Opponent */}
+          {insight.hardest_opponent && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <Swords className="w-4 h-4 text-red-500" />
+                  Hardest Opponent
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex items-center justify-between">
+                <div>
+                  <span className="text-sm font-medium">{insight.hardest_opponent.opponent_name}</span>
+                  <div className="text-xs text-[hsl(var(--muted))]">
+                    Elo: {insight.hardest_opponent.opponent_elo}
+                    {insight.hardest_opponent.stage && <> · {insight.hardest_opponent.stage}</>}
+                    {insight.hardest_opponent.group_name && <> · {insight.hardest_opponent.group_name}</>}
+                  </div>
+                </div>
+                {insight.hardest_opponent.match_date && (
+                  <span className="text-xs text-[hsl(var(--muted))]">{new Date(insight.hardest_opponent.match_date).toLocaleDateString()}</span>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </>
       )}
     </div>
   );

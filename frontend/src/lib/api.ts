@@ -380,6 +380,188 @@ export interface PowerRanking {
 
 // ---- API Methods ----
 
+// ---- Insights / Narrative / Momentum Types ----
+
+export interface InsightTeam {
+  team_name: string;
+  elo_score: number;
+  win_prob: number;
+  final_prob: number;
+  sf_prob: number;
+  qf_prob: number;
+  fifa_rank?: number | null;
+  xg_for?: number | null;
+  xg_against?: number | null;
+  z_score_elo?: number;
+  z_score_prob?: number;
+}
+
+export interface InsightCategory {
+  team_name: string;
+  elo_score: number;
+  win_prob: number;
+  z_score_elo: number;
+  z_score_prob: number;
+}
+
+export interface InsightsData {
+  contenders: InsightCategory[];
+  dark_horses: InsightCategory[];
+  overrated: InsightCategory[];
+  underrated: InsightCategory[];
+}
+
+export interface InsightsAnalysis {
+  teams: InsightTeam[];
+  insights: InsightsData;
+  count: number;
+}
+
+export interface NarrativeResponse {
+  headline: string;
+  story: string;
+  risks: string[];
+  opportunities: string[];
+  news_feed: FeedEvent[];
+}
+
+export interface MomentumEntry {
+  team_name: string;
+  win_prob: number;
+  prev_win_prob: number;
+  delta_win: number;
+  delta_final: number;
+  delta_sf: number;
+  delta_qf: number;
+  direction: "up" | "down" | "stable";
+}
+
+export interface MomentumResponse {
+  momentum: MomentumEntry[];
+  risers: MomentumEntry[];
+  fallers: MomentumEntry[];
+}
+
+export interface MotdMatch {
+  match_id: string;
+  home_team: string;
+  away_team: string;
+  match_date: string | null;
+  stage: string;
+  group_name: string | null;
+  home_win_prob: number;
+  draw_prob: number;
+  away_win_prob: number;
+  most_likely_score: string;
+  confidence_index: number;
+  surprise_risk: number;
+  importance: number;
+  contender_involved: boolean;
+}
+
+export interface MatchOfDayResponse {
+  matches: MotdMatch[];
+  top_match: MotdMatch | null;
+}
+
+export interface TeamInsightProbabilities {
+  win_prob: number;
+  final_prob: number;
+  sf_prob: number;
+  qf_prob: number;
+  r16_prob: number;
+  r32_prob: number;
+  avg_points: number;
+}
+
+export interface PathStage {
+  stage: string;
+  probability: number;
+}
+
+export interface HardestOpponent {
+  opponent_name: string;
+  opponent_elo: number;
+  match_date: string | null;
+  stage: string;
+  group_name: string | null;
+}
+
+export interface TeamInsightResponse {
+  team: any;
+  probabilities: TeamInsightProbabilities | null;
+  story: string;
+  most_likely_path: PathStage[];
+  hardest_opponent: HardestOpponent | null;
+}
+
+export interface FeedEvent {
+  headline: string;
+  detail: string;
+  delta: number | null;
+  direction: "up" | "down";
+}
+
+export interface FeedResponse {
+  feed: FeedEvent[];
+}
+
+export interface QualificationEntry {
+  team_name: string;
+  r16: number;
+  qf: number;
+  sf: number;
+  final: number;
+  champion: number;
+}
+
+export interface QualificationResponse {
+  heatmap: QualificationEntry[];
+}
+
+// ---- History / Audit / Drift Types ----
+
+export interface ModelVersion {
+  id: string;
+  sprint_version: string;
+  config_version: string;
+  calibration_version: string;
+  ensemble_version: string;
+  description: string;
+  active: boolean;
+  registered_at: string;
+  metadata: Record<string, unknown>;
+}
+
+export interface CalibrationHistoryEntry {
+  timestamp: string;
+  window: string;
+  tournament: string;
+  n: number;
+  accuracy: number;
+  brier: number;
+  ece: number;
+  coverage: number;
+  log_loss: number;
+}
+
+export interface AuditEntry {
+  id?: string;
+  timestamp: string;
+  action?: string;
+  model_version?: string;
+  status?: string;
+  details?: string;
+  [key: string]: unknown;
+}
+
+export interface DriftReport {
+  has_drift: boolean;
+  drift_score: number;
+  drifted_features: string[];
+  timestamp: string;
+}
+
 export const api = {
   teams: {
     list: (page = 1, perPage = 20) =>
@@ -477,5 +659,26 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
+  },
+  history: {
+    modelVersions: () => fetchJSON<ModelVersion[]>("/history/model-versions"),
+    calibration: () => fetchJSON<CalibrationHistoryEntry[]>("/history/calibration"),
+    audit: (limit = 50) => fetchJSON<AuditEntry[]>(`/history/audit?limit=${limit}`),
+    drift: () => fetchJSON<DriftReport>("/history/drift"),
+  },
+  audit: {
+    log: (limit = 50) => fetchJSON<AuditEntry[]>(`/audit/log?limit=${limit}`),
+  },
+  monitoring: {
+    drift: () => fetchJSON<DriftReport>("/monitoring/drift"),
+  },
+  insights: {
+    analysis: () => fetchJSON<InsightsAnalysis>("/insights/analysis"),
+    narrative: () => fetchJSON<NarrativeResponse>("/insights/narrative"),
+    momentum: () => fetchJSON<MomentumResponse>("/insights/momentum"),
+    matchOfTheDay: () => fetchJSON<MatchOfDayResponse>("/insights/match-of-the-day"),
+    team: (name: string) => fetchJSON<TeamInsightResponse>(`/insights/team/${encodeURIComponent(name)}`),
+    feed: () => fetchJSON<FeedResponse>("/insights/feed"),
+    qualification: () => fetchJSON<QualificationResponse>("/insights/qualification"),
   },
 };

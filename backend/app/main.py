@@ -11,6 +11,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from app.api import (
     analysis,
+    audit,
     calibration,
     calibration_refinement,
     comparison,
@@ -19,7 +20,10 @@ from app.api import (
     export,
     groups,
     health,
+    history,
+    insights,
     matches,
+    monitoring_drift,
     predictions,
     rankings,
     scenarios,
@@ -132,6 +136,10 @@ app.include_router(competitions.router, prefix=settings.api_prefix)
 app.include_router(export.router, prefix=settings.api_prefix)
 app.include_router(scenarios.router, prefix=settings.api_prefix)
 app.include_router(explain.router, prefix=settings.api_prefix)
+app.include_router(history.router, prefix=settings.api_prefix)
+app.include_router(insights.router, prefix=settings.api_prefix)
+app.include_router(audit.router, prefix=settings.api_prefix)
+app.include_router(monitoring_drift.router, prefix=settings.api_prefix)
 
 
 @app.get("/", include_in_schema=False)
