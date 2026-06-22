@@ -16,7 +16,7 @@ router = APIRouter(prefix="/audit", tags=["Audit & Monitoring"])
 
 
 @router.get("/log")
-@cached("audit:log", expire=30)
+@cached("audit:log", ttl=30)
 def get_audit_log(limit: int = Query(50, ge=1, le=500)):
     log_path = AUDIT_LOG
     if not log_path.exists():

@@ -177,7 +177,7 @@ def _get_prev_simulation_probs(db: Session) -> list[dict]:
 
 
 @router.get("/analysis")
-@cached("insights:analysis", expire=60)
+@cached("insights:analysis", ttl=60)
 def get_insights_analysis(db: Session = Depends(get_db)):
     teams = _get_simulation_probs(db)
     for t in teams:
@@ -203,7 +203,7 @@ def get_insights_analysis(db: Session = Depends(get_db)):
 
 
 @router.get("/narrative")
-@cached("insights:narrative", expire=60)
+@cached("insights:narrative", ttl=60)
 def get_narrative(db: Session = Depends(get_db)):
     teams = _get_simulation_probs(db)
     prev_teams = _get_prev_simulation_probs(db)
@@ -270,7 +270,7 @@ def get_narrative(db: Session = Depends(get_db)):
 
 
 @router.get("/momentum")
-@cached("insights:momentum", expire=60)
+@cached("insights:momentum", ttl=60)
 def get_momentum(db: Session = Depends(get_db)):
     teams = _get_simulation_probs(db)
     prev_teams = _get_prev_simulation_probs(db)
@@ -309,7 +309,7 @@ def get_momentum(db: Session = Depends(get_db)):
 
 
 @router.get("/match-of-the-day")
-@cached("insights:match-of-day", expire=120)
+@cached("insights:match-of-day", ttl=120)
 def get_match_of_the_day(db: Session = Depends(get_db)):
     from app.engine.match_prediction import MatchPredictionEngine
     from app.domain.entities import TeamEntity
@@ -397,7 +397,7 @@ def get_match_of_the_day(db: Session = Depends(get_db)):
 
 
 @router.get("/team/{team_name}")
-@cached("insights:team", expire=120)
+@cached("insights:team", ttl=120)
 def get_team_insight(team_name: str, db: Session = Depends(get_db)):
     team = db.query(Team).filter(Team.name == team_name).first()
     if not team:
@@ -491,7 +491,7 @@ def get_team_insight(team_name: str, db: Session = Depends(get_db)):
 
 
 @router.get("/feed")
-@cached("insights:feed", expire=60)
+@cached("insights:feed", ttl=60)
 def get_news_feed(db: Session = Depends(get_db)):
     teams = _get_simulation_probs(db)
     prev_teams = _get_prev_simulation_probs(db)
@@ -511,7 +511,7 @@ def get_news_feed(db: Session = Depends(get_db)):
 
 
 @router.get("/qualification")
-@cached("insights:qualification", expire=120)
+@cached("insights:qualification", ttl=120)
 def get_qualification_heatmap(db: Session = Depends(get_db)):
     teams = _get_simulation_probs(db)
     heatmap = []

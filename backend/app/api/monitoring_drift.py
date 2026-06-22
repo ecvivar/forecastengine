@@ -11,7 +11,7 @@ router = APIRouter(prefix="/monitoring", tags=["Monitoring"])
 
 
 @router.get("/drift")
-@cached("monitoring:drift", expire=30)
+@cached("monitoring:drift", ttl=30)
 def get_drift_report():
     detector = DriftDetector()
     tracker = CalibrationTracker(TRACKER_PATH)
