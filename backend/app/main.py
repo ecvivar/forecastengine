@@ -11,25 +11,25 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from app.api import (
     analysis,
-    audit,
     calibration,
     calibration_refinement,
     comparison,
     competitions,
     dashboard,
     export,
+    explain,
     groups,
     health,
     history,
     insights,
     matches,
     monitoring_drift,
+    monitoring_routes,
     predictions,
     rankings,
     scenarios,
     simulations,
     teams,
-    explain,
 )
 from app.core.config import get_settings
 from app.core.error_handler import (
@@ -138,7 +138,7 @@ app.include_router(scenarios.router, prefix=settings.api_prefix)
 app.include_router(explain.router, prefix=settings.api_prefix)
 app.include_router(history.router, prefix=settings.api_prefix)
 app.include_router(insights.router, prefix=settings.api_prefix)
-app.include_router(audit.router, prefix=settings.api_prefix)
+app.include_router(monitoring_routes.router, prefix=settings.api_prefix)
 app.include_router(monitoring_drift.router, prefix=settings.api_prefix)
 
 
