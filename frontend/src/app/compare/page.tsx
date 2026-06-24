@@ -5,6 +5,7 @@ import { api, Team, IGFScore } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import TeamRadarChart from "@/components/TeamRadarChart";
 import ProbabilityBar from "@/components/ProbabilityBar";
 import { getContinentColor, getConfidenceColor, getConfidenceLabel } from "@/lib/utils";
@@ -39,6 +40,7 @@ export default function ComparePage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [igfScores, setIgfScores] = useState<IGFScore[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [teamA, setTeamA] = useState<string>("");
   const [teamB, setTeamB] = useState<string>("");
   const [activeTab, setActiveTab] = useState<TabId>("profiles");
@@ -66,7 +68,10 @@ export default function ComparePage() {
           setTeamBId(t[1].id);
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load teams for comparison.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -124,6 +129,7 @@ export default function ComparePage() {
   }, [componentsA, componentsB, teamA, teamB]);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const StatRow = ({ label, a, b, fmt = (v: any) => v, unit = "" }: { label: string; a: any; b: any; fmt?: (v: any) => any; unit?: string }) => (
     <div className="flex items-center justify-between py-2 border-b border-[hsl(var(--border))] last:border-0">

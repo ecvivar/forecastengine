@@ -6,6 +6,7 @@ import { api, Team, IGFScore } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import TeamRadarChart from "@/components/TeamRadarChart";
 import { getContinentColor } from "@/lib/utils";
 import { X, BarChart3, Shield, Search, Filter } from "lucide-react";
@@ -16,6 +17,7 @@ export default function TeamsPage() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [igfScores, setIgfScores] = useState<IGFScore[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [continentFilter, setContinentFilter] = useState<string | null>(null);
@@ -30,7 +32,10 @@ export default function TeamsPage() {
         setTeams(t);
         setIgfScores(igf);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load teams.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -52,6 +57,7 @@ export default function TeamsPage() {
   }, [igfScores, search, continentFilter, teams]);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <div className="container-page space-y-6">

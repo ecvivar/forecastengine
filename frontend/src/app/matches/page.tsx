@@ -5,6 +5,7 @@ import { api, Match, FullMatchPrediction } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import ProbabilityBar from "@/components/ProbabilityBar";
 import { formatDate, getStageLabel, getConfidenceColor, getConfidenceLabel } from "@/lib/utils";
 import { ChevronDown, ChevronRight, Activity, AlertTriangle, Target, BarChart3 } from "lucide-react";
@@ -13,6 +14,7 @@ export default function MatchesPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [predictions, setPredictions] = useState<Map<string, FullMatchPrediction>>(new Map());
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [expandedMatches, setExpandedMatches] = useState<Set<string>>(new Set());
   const [expandedStage, setExpandedStage] = useState<string | null>(null);
 
@@ -31,7 +33,10 @@ export default function MatchesPage() {
         });
       await Promise.allSettled(promises);
       setPredictions(predMap);
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch((err) => {
+      console.error(err);
+      setError("Unable to load matches.");
+    }).finally(() => setLoading(false));
   }, []);
 
   const byStage = useMemo(() => {
@@ -44,6 +49,7 @@ export default function MatchesPage() {
   }, [matches]);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const toggleMatch = (id: string) => {
     setExpandedMatches((prev) => {
@@ -105,11 +111,11 @@ export default function MatchesPage() {
                               />
                             ) : (
                               <div className="flex items-center justify-between text-sm font-medium">
-                                <span className="text-blue-600">{m.home_team_id}</span>
+                                <span className="text-blue-600">{m.home_team_name || m.home_team_id}</span>
                                 <span className="mx-4 font-bold text-gray-900">
                                   {m.home_goals !== null ? `${m.home_goals} - ${m.away_goals}` : "vs"}
                                 </span>
-                                <span className="text-red-600">{m.away_team_id}</span>
+                                <span className="text-red-600">{m.away_team_name || m.away_team_id}</span>
                               </div>
                             )}
                           </div>

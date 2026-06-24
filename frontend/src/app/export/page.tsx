@@ -5,6 +5,7 @@ import { api, Simulation, IGFScore } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { Download, FileJson, FileSpreadsheet, Table, FileText } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
@@ -16,6 +17,7 @@ export default function ExportPage() {
   const [groups, setGroups] = useState<any[]>([]);
   const [simulations, setSimulations] = useState<Simulation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedTeam, setSelectedTeam] = useState("");
   const [selectedGroup, setSelectedGroup] = useState("");
   const [selectedSim, setSelectedSim] = useState("");
@@ -34,11 +36,15 @@ export default function ExportPage() {
         if (g.length) setSelectedGroup(g[0].id);
         if (s.length) setSelectedSim(s[0].id);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load export data.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const downloadUrl = (path: string, filename: string) => {
     const a = document.createElement("a");
@@ -48,10 +54,13 @@ export default function ExportPage() {
     a.click();
   };
 
+  const colorStyles: Record<string, string> = {
+    primary: "bg-primary-50 text-primary-700 hover:bg-primary-100 border-primary-200",
+  };
   const ExportButton = ({ label, icon: Icon, onClick, color = "primary" }: { label: string; icon: any; onClick: () => void; color?: string }) => (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2.5 bg-${color}-50 text-${color}-700 rounded-lg text-sm font-medium hover:bg-${color}-100 transition-colors border border-${color}-200`}
+      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors border ${colorStyles[color] || colorStyles.primary}`}
     >
       <Icon className="w-4 h-4" />
       {label}

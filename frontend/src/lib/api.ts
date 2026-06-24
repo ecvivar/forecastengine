@@ -50,6 +50,8 @@ export interface Match {
   away_xg: number | null;
   is_neutral_venue: boolean;
   status: string;
+  home_team_name: string | null;
+  away_team_name: string | null;
 }
 
 export interface GroupStanding {

@@ -5,6 +5,7 @@ import { api, CalibrationReport, RefinementReport, CalibrationBin } from "@/lib/
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import CalibrationCurveChart from "@/components/CalibrationCurveChart";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend,
@@ -18,16 +19,23 @@ export default function ExplainabilityPage() {
   const [calibration, setCalibration] = useState<CalibrationReport | null>(null);
   const [refinement, setRefinement] = useState<RefinementReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
 
   useEffect(() => {
     api.calibration.results()
       .then(setCalibration)
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load explainability data.");
+      })
       .finally(() => {
         api.refinement.results()
           .then(setRefinement)
-          .catch(() => {})
+          .catch((err) => {
+            console.error(err);
+            setError("Unable to load explainability data.");
+          })
           .finally(() => setLoading(false));
       });
   }, []);
@@ -44,6 +52,7 @@ export default function ExplainabilityPage() {
   };
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <div className="container-page space-y-6">

@@ -5,6 +5,7 @@ import { api, InsightsAnalysis, NarrativeResponse, MomentumResponse, MatchOfDayR
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { formatDateTime } from "@/lib/utils";
 import ProbabilityBar from "@/components/ProbabilityBar";
 import {
@@ -21,6 +22,7 @@ export default function ExecutivePage() {
   const [motd, setMotd] = useState<MatchOfDayResponse | null>(null);
   const [qual, setQual] = useState<QualificationResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -35,10 +37,14 @@ export default function ExecutivePage() {
       setMomentum(m);
       setMotd(motd);
       setQual(q);
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch((err) => {
+      console.error(err);
+      setError("Unable to load executive brief.");
+    }).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <div className="container-page space-y-6">

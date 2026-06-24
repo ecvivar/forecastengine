@@ -15,28 +15,80 @@ import {
 import ReliabilityDiagram from "@/components/ReliabilityDiagram";
 import BenchmarkChart from "@/components/BenchmarkChart";
 import CalibrationCurveChart from "@/components/CalibrationCurveChart";
-import { BarChart3, CheckCircle2, AlertTriangle } from "lucide-react";
+import { BarChart3, CheckCircle2, AlertTriangle, RefreshCw } from "lucide-react";
 
 export default function CalibrationPage() {
   const [report, setReport] = useState<RefinementReport | null>(null);
   const [calibReport, setCalibReport] = useState<CalibrationReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [needsRun, setNeedsRun] = useState(false);
+
+  const loadResults = async () => {
+    setLoading(true);
+    setError(null);
+    setNeedsRun(false);
+    try {
+      const [ref, cal] = await Promise.all([
+        api.refinement.results(),
+        api.calibration.results().catch(() => null),
+      ]);
+      setReport(ref);
+      setCalibReport(cal);
+    } catch {
+      setNeedsRun(true);
+      setReport(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const runCalibration = async () => {
+    setRunning(true);
+    setError(null);
+    try {
+      const [ref, cal] = await Promise.all([
+        api.refinement.run(),
+        api.calibration.run("full").catch(() => null),
+      ]);
+      setReport(ref);
+      setCalibReport(cal);
+      setNeedsRun(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to run calibration");
+    } finally {
+      setRunning(false);
+    }
+  };
 
   useEffect(() => {
-    Promise.all([
-      api.refinement.run(),
-      api.calibration.run("full").catch(() => null),
-    ])
-      .then(([ref, cal]) => {
-        setReport(ref);
-        setCalibReport(cal);
-      })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+    loadResults();
   }, []);
 
   if (loading) return <SkeletonPage />;
+
+  if (needsRun) {
+    return (
+      <div className="container-page text-center py-12">
+        <BarChart3 className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+        <h2 className="text-xl font-bold mb-2">No Calibration Data Yet</h2>
+        <p className="text-gray-500 mb-6">Run calibration to generate reports.</p>
+        <button
+          onClick={runCalibration}
+          disabled={running}
+          className="px-6 py-2.5 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center gap-2 mx-auto"
+        >
+          {running ? (
+            <><RefreshCw className="w-4 h-4 animate-spin" /> Running...</>
+          ) : (
+            <><BarChart3 className="w-4 h-4" /> Run Calibration</>
+          )}
+        </button>
+        {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
+      </div>
+    );
+  }
 
   if (error || !report) {
     return (
@@ -60,10 +112,23 @@ export default function CalibrationPage() {
 
   return (
     <div className="container-page space-y-6">
-      <div>
-        <div className="text-xs text-[hsl(var(--muted))] uppercase tracking-wider mb-1">Accuracy</div>
-        <h1 className="page-title">Calibration Dashboard</h1>
-        <p className="page-subtitle">Brier score, ECE, calibration curves, and confederation bias tracking.</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="text-xs text-[hsl(var(--muted))] uppercase tracking-wider mb-1">Accuracy</div>
+          <h1 className="page-title">Calibration Dashboard</h1>
+          <p className="page-subtitle">Brier score, ECE, calibration curves, and confederation bias tracking.</p>
+        </div>
+        <button
+          onClick={runCalibration}
+          disabled={running}
+          className="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center gap-2 shrink-0"
+        >
+          {running ? (
+            <><RefreshCw className="w-4 h-4 animate-spin" /> Running...</>
+          ) : (
+            <><RefreshCw className="w-4 h-4" /> Run Calibration</>
+          )}
+        </button>
       </div>
 
       {/* Summary */}

@@ -34,3 +34,11 @@ class Match(Base):
     competition: Mapped["Competition"] = relationship("Competition", back_populates="matches")
     home_team: Mapped["Team"] = relationship("Team", foreign_keys=[home_team_id], back_populates="home_matches")
     away_team: Mapped["Team"] = relationship("Team", foreign_keys=[away_team_id], back_populates="away_matches")
+
+    @property
+    def home_team_name(self) -> str | None:
+        return self.home_team.name if self.home_team else None
+
+    @property
+    def away_team_name(self) -> str | None:
+        return self.away_team.name if self.away_team else None

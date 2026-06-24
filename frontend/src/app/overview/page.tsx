@@ -5,21 +5,27 @@ import { api, type WinnerProb, type TeamStageProb } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { Trophy, Shield, TrendingUp } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function OverviewPage() {
   const [championProbs, setChampionProbs] = useState<WinnerProb[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     api.dashboard.get()
       .then((d) => setChampionProbs(d.winner_probs))
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load tournament overview.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const top15 = championProbs.slice(0, 15);
   const chartData = top15.map((w) => ({

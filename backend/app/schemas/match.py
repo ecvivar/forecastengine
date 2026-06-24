@@ -27,6 +27,8 @@ class MatchResponse(MatchBase):
     home_xg: float | None = None
     away_xg: float | None = None
     status: str
+    home_team_name: str | None = None
+    away_team_name: str | None = None
 
 
 class MatchPrediction(BaseModel):

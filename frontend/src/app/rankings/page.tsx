@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { api, type PowerRanking, type PowerRankingTeam, type IGFScore } from "@/lib/api";
 import { getContinentColor } from "@/lib/utils";
 import SortableTable, { type Column } from "@/components/SortableTable";
@@ -18,6 +19,7 @@ export default function RankingsPage() {
   const [scores, setScores] = useState<IGFScore[]>([]);
   const [power, setPower] = useState<PowerRanking | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [radarTeam, setRadarTeam] = useState<string>("");
 
   useEffect(() => {
@@ -30,11 +32,15 @@ export default function RankingsPage() {
         setPower(pr);
         if (igf.length > 0) setRadarTeam(igf[0].team_name);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load rankings data.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const sorted = [...scores].sort((a, b) => b.igf_score - a.igf_score);
   const radarData = scores.find((s) => s.team_name === radarTeam);

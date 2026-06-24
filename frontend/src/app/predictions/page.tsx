@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { api, type MatchPrediction, type FullMatchPrediction } from "@/lib/api";
 import { formatProbability, getStageLabel, getConfidenceColor, formatDate } from "@/lib/utils";
 import ProbabilityBar from "@/components/ProbabilityBar";
@@ -15,6 +16,7 @@ export default function PredictionsPage() {
   const [fullPredictions, setFullPredictions] = useState<Record<string, FullMatchPrediction>>({});
   const [matchStages, setMatchStages] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -41,11 +43,15 @@ export default function PredictionsPage() {
         );
         setFullPredictions(fulls);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load predictions.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   if (predictions.length === 0) {
     return (

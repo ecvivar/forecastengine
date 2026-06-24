@@ -8,6 +8,7 @@ import { api, type DashboardData, type NarrativeResponse, type MomentumResponse,
 import { formatPercent, getContinentColor, getStageLabel } from "@/lib/utils";
 import ProbabilityBar from "@/components/ProbabilityBar";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import {
   Trophy, TrendingUp, Activity, Shield, AlertTriangle,
   BarChart3, ArrowUpRight, ArrowDownRight, BrainCircuit, RefreshCw, Globe,
@@ -23,6 +24,7 @@ export default function CommandCenter() {
   const [momentum, setMomentum] = useState<MomentumResponse | null>(null);
   const [motd, setMotd] = useState<MatchOfDayResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -35,11 +37,15 @@ export default function CommandCenter() {
       setNarrative(n);
       setMomentum(m);
       setMotd(motd);
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch((err) => {
+      console.error(err);
+      setError("Unable to load dashboard data.");
+    }).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
-  if (!data) return null;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
+  if (!data) return <ErrorState message="Dashboard data is unavailable." />;
 
   return (
     <div className="container-page space-y-6">

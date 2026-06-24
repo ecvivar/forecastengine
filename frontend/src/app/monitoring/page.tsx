@@ -5,6 +5,7 @@ import { api, CalibrationReport, AuditEntry, DriftReport } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { formatDateTime } from "@/lib/utils";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine,
@@ -19,6 +20,7 @@ export default function MonitoringPage() {
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
   const [drift, setDrift] = useState<DriftReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -29,10 +31,14 @@ export default function MonitoringPage() {
       setCalibration(cal);
       setAuditLog(Array.isArray(audit) ? audit : []);
       setDrift(driftReport);
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch((err) => {
+      console.error(err);
+      setError("Unable to load monitoring data.");
+    }).finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const metrics = [
     { label: "Calibration Status", value: calibration ? "Active" : "Pending", icon: CheckCircle, color: calibration ? "ok" : "warn" },

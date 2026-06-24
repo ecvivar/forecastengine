@@ -5,6 +5,8 @@ import { api, MomentumResponse } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
@@ -15,16 +17,21 @@ import {
 export default function MomentumPage() {
   const [data, setData] = useState<MomentumResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     api.insights.momentum()
       .then(setData)
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load momentum data.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
-  if (!data) return null;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
+  if (!data) return <EmptyState message="No momentum data available. Run multiple simulations first." />;
 
   return (
     <div className="container-page space-y-6">

@@ -6,6 +6,7 @@ import { api, type IGFScore, type TeamStageProb, type TeamInsightResponse } from
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { BarChart, Bar, XAxis, YAxis, Cell } from "recharts";
 import { Shield, BarChart3, Activity, TrendingUp, MessageSquare, Target, Swords, Lightbulb } from "lucide-react";
@@ -21,6 +22,7 @@ export default function TeamDetailPage() {
   const [simProbs, setSimProbs] = useState<TeamStageProb | null>(null);
   const [insight, setInsight] = useState<TeamInsightResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!teamId) return;
@@ -42,7 +44,10 @@ export default function TeamDetailPage() {
         setSimProbs(tp || null);
       }
       api.insights.team(t.name).then(setInsight).catch(() => {});
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch((err) => {
+      console.error(err);
+      setError("Unable to load team details.");
+    }).finally(() => setLoading(false));
   }, [teamId]);
 
   const radarData = useMemo(() => {
@@ -54,7 +59,8 @@ export default function TeamDetailPage() {
   }, [igf]);
 
   if (loading) return <SkeletonPage />;
-  if (!team) return <div className="container-page"><p className="text-[hsl(var(--muted))]">Team not found.</p></div>;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
+  if (!team) return <ErrorState title="Team Not Found" message="The requested team could not be found." />;
 
   const probs = simProbs;
   const probChart = probs ? [

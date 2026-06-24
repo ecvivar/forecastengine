@@ -5,6 +5,7 @@ import { api, QualificationResponse } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { Trophy, Shield, Target, Swords, Zap } from "lucide-react";
 
 const STAGES = [
@@ -18,12 +19,16 @@ const STAGES = [
 export default function QualificationPage() {
   const [data, setData] = useState<QualificationResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("champion");
 
   useEffect(() => {
     api.insights.qualification()
       .then(setData)
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load qualification data.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -35,7 +40,8 @@ export default function QualificationPage() {
   const getOpacity = (val: number, max: number) => Math.max(0.1, Math.min(1, val / (max || 1)));
 
   if (loading) return <SkeletonPage />;
-  if (!data) return null;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
+  if (!data) return <ErrorState message="No qualification data available." />;
 
   const maxes: Record<string, number> = {};
   for (const s of STAGES) {

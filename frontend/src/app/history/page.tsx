@@ -5,6 +5,7 @@ import { api, Simulation, SimulationDetail, ModelVersion, CalibrationHistoryEntr
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { formatDateTime } from "@/lib/utils";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -23,6 +24,7 @@ export default function HistoryPage() {
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
   const [drift, setDrift] = useState<DriftReport | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -39,7 +41,10 @@ export default function HistoryPage() {
         setAuditLog(audit);
         setDrift(driftReport);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load history data.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -59,6 +64,7 @@ export default function HistoryPage() {
   };
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const sortedSims = [...simulations].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()

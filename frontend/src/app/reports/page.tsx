@@ -5,6 +5,7 @@ import { api, DashboardData, SimulationProbabilities, IGFScore, PowerRanking } f
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { getContinentColor, getWinColor } from "@/lib/utils";
 import TeamRadarChart from "@/components/TeamRadarChart";
 import {
@@ -23,6 +24,7 @@ export default function ReportsPage() {
   const [igfScores, setIgfScores] = useState<IGFScore[]>([]);
   const [powerRanking, setPowerRanking] = useState<PowerRanking | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -35,11 +37,15 @@ export default function ReportsPage() {
         setIgfScores(igf);
         setPowerRanking(pr);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load report data.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const topContenders = dashboard?.winner_probs?.slice(0, 5) || [];
   const darkHorses = igfScores

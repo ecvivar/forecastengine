@@ -5,6 +5,8 @@ import { api, Simulation, SimulationProbabilities, TeamStageProb } from "@/lib/a
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
+import { EmptyState } from "@/components/ui/empty-state";
 import StageProgressBar from "@/components/StageProgressBar";
 import { getContinentColor, getWinColor } from "@/lib/utils";
 import { Map as MapIcon, Network, Flag, Footprints } from "lucide-react";
@@ -13,17 +15,21 @@ export default function ExplorerPage() {
   const [simulations, setSimulations] = useState<Simulation[]>([]);
   const [probData, setProbData] = useState<SimulationProbabilities | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedSim, setSelectedSim] = useState("");
   const [selectedTeam, setSelectedTeam] = useState("");
   const [view, setView] = useState<"groups" | "knockout" | "team-path">("groups");
 
-  useEffect(() => {
+  const loadData = (simId?: string) => {
+    setLoading(true);
+    setError(null);
     api.simulations.list()
       .then((s) => {
         setSimulations(s);
-        if (s.length) {
-          setSelectedSim(s[0].id);
-          return api.simulations.probabilities(s[0].id);
+        const targetId = simId || (s.length ? s[0].id : "");
+        if (targetId) {
+          setSelectedSim(targetId);
+          return api.simulations.probabilities(targetId);
         }
         return null;
       })
@@ -33,24 +39,36 @@ export default function ExplorerPage() {
           if (data.teams.length) setSelectedTeam(data.teams[0].team_name);
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load simulation data.");
+      })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
   const handleSimChange = (id: string) => {
     setSelectedSim(id);
     setLoading(true);
+    setError(null);
     api.simulations.probabilities(id)
       .then((data) => {
         setProbData(data);
         if (data.teams.length) setSelectedTeam(data.teams[0].team_name);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load simulation probabilities.");
+      })
       .finally(() => setLoading(false));
   };
 
   if (loading) return <SkeletonPage />;
-  if (!probData) return <div className="container-page"><p className="text-gray-400">No simulation data available. Run a simulation first.</p></div>;
+  if (error) return <ErrorState message={error} onRetry={() => loadData(selectedSim || undefined)} />;
+  if (!probData) return <EmptyState title="No Simulation Data" message="Run a simulation first to explore probabilities." />;
 
   const tabs = [
     { id: "groups", label: "Group Stage", icon: MapIcon },

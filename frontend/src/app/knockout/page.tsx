@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { api, type SimulationProbabilities, type TeamStageProb } from "@/lib/api";
 import { formatPercent, getWinColor } from "@/lib/utils";
 import SortableTable, { type Column } from "@/components/SortableTable";
@@ -14,6 +15,7 @@ import Link from "next/link";
 export default function KnockoutPage() {
   const [data, setData] = useState<SimulationProbabilities | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"win" | "final" | "sf">("win");
 
   useEffect(() => {
@@ -27,11 +29,15 @@ export default function KnockoutPage() {
         return null;
       })
       .then(setData)
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setError("Unable to load knockout probabilities.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) return <SkeletonPage />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   if (!data) {
     return (

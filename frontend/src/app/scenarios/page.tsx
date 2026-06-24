@@ -5,6 +5,7 @@ import { api } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SkeletonPage } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { getWinColor } from "@/lib/utils";
 import { FlaskConical, Plus, Trash2, Play, AlertTriangle } from "lucide-react";
 
@@ -27,6 +28,7 @@ interface ScenarioResult {
 export default function ScenariosPage() {
   const [teams, setTeams] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [modifications, setModifications] = useState<Modification[]>([
     { team_name: "", result_modifier: 10, description: "" },
@@ -37,16 +39,17 @@ export default function ScenariosPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    Promise.all([
-      api.teams.list(1, 100),
-    ])
-      .then(([t]) => {
+    api.teams.list(1, 100)
+      .then((t) => {
         setTeams(t);
         if (t.length) {
           setModifications([{ team_name: t[0].name, result_modifier: 10, description: "" }]);
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error(err);
+        setLoadingError("Unable to load teams.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -100,6 +103,7 @@ export default function ScenariosPage() {
   };
 
   if (loading) return <SkeletonPage />;
+  if (loadingError) return <ErrorState message={loadingError} onRetry={() => window.location.reload()} />;
 
   return (
     <div className="container-page">
