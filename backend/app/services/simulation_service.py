@@ -1,5 +1,7 @@
 import json
+import logging
 import time
+import traceback
 import uuid
 from datetime import datetime
 
@@ -19,6 +21,8 @@ from app.models.simulation import Simulation, SimulationResult
 from app.models.team import Team
 from app.models.xg_metrics import XGMetrics
 from app.schemas.simulation import SimulationCreate
+
+logger = logging.getLogger(__name__)
 
 
 class SimulationService:
@@ -135,53 +139,96 @@ class SimulationService:
         if not sim:
             return None
 
+        logger.info("run_simulation[%s]: starting with %d iterations", sim_id, sim.num_simulations)
         sim.status = "running"
         self.db.commit()
+        logger.info("run_simulation[%s]: status set to 'running'", sim_id)
 
         start = time.time()
-        team_entities, group_mapping = self._load_team_entities()
+        team_entities: list[TeamEntity] = []
+        try:
+            logger.info("run_simulation[%s]: loading team entities...", sim_id)
+            team_entities, group_mapping = self._load_team_entities()
+            logger.info("run_simulation[%s]: loaded %d team entities", sim_id, len(team_entities))
 
-        config = SimulationConfig(
-            num_simulations=sim.num_simulations,
-        )
-        self.engine.config = config
-        results = self.engine.run(team_entities, group_mapping)
-
-        for r in results:
-            sr = SimulationResult(
-                simulation_id=sim_id,
-                team_id=r.team_id,
-                group_name=r.group_name,
-                group_position=r.group_position,
-                reached_round_of_32=r.round_of_32_count,
-                reached_round_of_16=r.round_of_16_count,
-                reached_quarter_final=r.quarter_final_count,
-                reached_semi_final=r.semi_final_count,
-                reached_final=r.final_count,
-                won_tournament=r.won_count,
-                points=r.total_points,
+            config = SimulationConfig(
+                num_simulations=sim.num_simulations,
             )
-            self.db.add(sr)
+            self.engine.config = config
 
-        sim.status = "completed"
-        sim.completed_at = datetime.utcnow()
-        self.db.commit()
-        self.db.refresh(sim)
+            logger.info("run_simulation[%s]: running Monte Carlo engine...", sim_id)
+            results = self.engine.run(team_entities, group_mapping)
+            logger.info("run_simulation[%s]: Monte Carlo engine completed", sim_id)
 
-        duration = time.time() - start
-        record_simulation_duration(duration * 1000)
-        log_simulation(
-            simulation_id=str(sim_id),
-            teams=len(team_entities),
-            iterations=sim.num_simulations,
-            duration=duration,
-            success=True,
-        )
+            logger.info("run_simulation[%s]: persisting %d results...", sim_id, len(results))
+            for r in results:
+                sr = SimulationResult(
+                    simulation_id=sim_id,
+                    team_id=r.team_id,
+                    group_name=r.group_name,
+                    group_position=r.group_position,
+                    reached_round_of_32=r.round_of_32_count,
+                    reached_round_of_16=r.round_of_16_count,
+                    reached_quarter_final=r.quarter_final_count,
+                    reached_semi_final=r.semi_final_count,
+                    reached_final=r.final_count,
+                    won_tournament=r.won_count,
+                    points=r.total_points,
+                )
+                self.db.add(sr)
 
-        cache = get_cache()
-        cache.invalidate("simulations:list:*")
-        cache.invalidate(f"simulations:detail:{sim_id}")
-        cache.invalidate("dashboard:*")
-        cache.invalidate("rankings:*")
+            sim.status = "completed"
+            sim.completed_at = datetime.utcnow()
+            self.db.commit()
+            self.db.refresh(sim)
+            logger.info("run_simulation[%s]: commit OK — status='completed'", sim_id)
 
-        return sim
+            duration = time.time() - start
+            record_simulation_duration(duration * 1000)
+            log_simulation(
+                simulation_id=str(sim_id),
+                teams=len(team_entities),
+                iterations=sim.num_simulations,
+                duration=duration,
+                success=True,
+            )
+
+            logger.info("run_simulation[%s]: invalidating caches...", sim_id)
+            cache = get_cache()
+            cache.invalidate("simulations:list:*")
+            cache.invalidate(f"simulations:detail:{sim_id}")
+            cache.invalidate("dashboard:*")
+            cache.invalidate("rankings:*")
+            logger.info("run_simulation[%s]: cache invalidation complete", sim_id)
+
+            return sim
+
+        except Exception:
+            tb = traceback.format_exc()
+            logger.error("run_simulation[%s]: FAILED\n%s", sim_id, tb)
+
+            try:
+                self.db.rollback()
+                logger.info("run_simulation[%s]: transaction rolled back", sim_id)
+            except Exception as rb_err:
+                logger.error("run_simulation[%s]: rollback failed: %s", sim_id, rb_err)
+
+            try:
+                sim.status = "failed"
+                sim.completed_at = datetime.utcnow()
+                self.db.commit()
+                logger.info("run_simulation[%s]: status set to 'failed'", sim_id)
+            except Exception:
+                self.db.rollback()
+                logger.error("run_simulation[%s]: could not set status to 'failed'", sim_id)
+
+            duration = time.time() - start
+            log_simulation(
+                simulation_id=str(sim_id),
+                teams=len(team_entities),
+                iterations=0,
+                duration=duration,
+                success=False,
+            )
+
+            return sim
